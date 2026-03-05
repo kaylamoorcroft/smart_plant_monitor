@@ -15,53 +15,143 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: Align(
-            alignment: Alignment.center,
-            child: Text('Plant Overview'),
-          ),
-        ),
-        body: Center(
-          child: SensorReadings(),
-        ),
-        bottomNavigationBar: BottomAppBar(
-          child: Container(
-            height: 50,
-            child: Center(
-              child: Text('Buttons for navigation'),
+      home: ReadingView(),
+    );
+  }
+}
+
+class ReadingModel {
+  Future<Data> getData() async {
+    final uri = Uri.https(
+      'muc-server.onrender.com',
+      '/data/latest',
+    );
+    try {
+      final response = await get(uri);
+      if (response.statusCode != 200) {
+        throw HttpException('Failed to update data');
+      }
+      print("json response: ${response.body}");
+      Data data = Data.fromJson(jsonDecode(response.body));
+      return data;
+    } on ClientException {
+      throw HttpException('Failed to load data');
+    }
+  }
+}
+
+class ReadingViewModel extends ChangeNotifier {
+  final ReadingModel model;
+  Data? data;
+  String? errorMessage;
+  bool loading = false;
+
+  ReadingViewModel(this.model) {
+    getData();
+  }
+
+  Future<void> getData() async {
+    loading = true;
+    notifyListeners();
+    try {
+      data = await model.getData();
+      print('Data loaded: ${data!.toString()}'); // Temporary
+      errorMessage = null; // Clear any previous errors.
+    } on HttpException catch (error) {
+      errorMessage = error.message;
+      data = null;
+    }
+    loading = false;
+    notifyListeners();
+  }
+
+}
+
+class ReadingView extends StatelessWidget {
+  ReadingView({super.key});
+
+  final ReadingViewModel viewModel = ReadingViewModel(ReadingModel());
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Plant Overview'),
+        actions: [],
+      ),
+      body: ListenableBuilder(
+        listenable: viewModel,
+        builder: (context, child) {
+          return switch ((
+            viewModel.loading,
+            viewModel.data,
+            viewModel.errorMessage,
+          )) {
+            (true, _, _) => Center(child: CircularProgressIndicator()),
+            (false, _, String message) => Center(child: Text(message)),
+            (false, null, null) => Center(
+              child: Text('An unknown error has occurred'),
             ),
+            // The summary must be non-null in this switch case.
+            (false, Data data, null) => SensorPage(
+              dataInfo: DataInfo.fromData(data),
+              reloadDataCallback: viewModel.getData,
+            ),
+          };
+        },
+      ),
+      bottomNavigationBar: BottomAppBar(
+        child: Container(
+          height: 50,
+          child: Center(
+            child: Text('Buttons for navigation'),
           ),
-        ) ,
+        ),
+      ) ,
+    );
+  }
+}
+
+class SensorPage extends StatelessWidget {
+  const SensorPage({
+    super.key,
+    required this.dataInfo,
+    required this.reloadDataCallback,
+  });
+
+  final List<DataInfo> dataInfo;
+  final VoidCallback reloadDataCallback;
+  
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 40.0),
+      child: Column(
+        spacing: 30,
+        children: [
+          for (int i = 0; i < dataInfo.length; i += 2)
+            Row(
+              spacing: 50,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SensorReading(dataInfo[i]),
+                if (i + 1 < dataInfo.length) SensorReading(dataInfo[i + 1]),
+              ],
+            ),
+          ElevatedButton(
+            onPressed: reloadDataCallback,
+            child: Text('Reload Data'),
+          ),
+        ],
       ),
     );
   }
 }
 
-class ReadingsModel {
-  Future<Data> getData() async {
-    final uri = Uri.https(
-      'muc-server.onrender.com',
-      '/data',
-    );
-    final response = await get(uri);
-
-    if (response.statusCode != 200) {
-      throw HttpException('Failed to update resource');
-    }
-    print(response.body);
-    Data data = Data.fromJson(jsonDecode(response.body)["history"][0]);
-    print(data);
-    return data;
-  }
-}
-
 class SensorReading extends StatelessWidget {
-  const SensorReading(this.value, this.unit, this.label, {super.key});
+  const SensorReading(this.dataInfo, {super.key});
 
-  final double value;
-  final String unit;
-  final String label;
+  final DataInfo dataInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -77,46 +167,13 @@ class SensorReading extends StatelessWidget {
           ),
           child: Center(
             child: Text(
-              "${value.toStringAsFixed(0)} $unit",
+              dataInfo.displayValue,
               style: Theme.of(context).textTheme.titleLarge,
             ),
           ),
         ),
-        Text(label, style: Theme.of(context).textTheme.bodyMedium), 
+        Text(dataInfo.displayName, style: Theme.of(context).textTheme.bodyMedium), 
       ],   
-    );
-  }
-}
-
-class SensorReadings extends StatelessWidget {
-  const SensorReadings({super.key});
-  
-  // TODO: Replace with actual sensor readings
-  final List<SensorReading> _readings = const [
-    SensorReading(23.5, '°C', "Temperature"),
-    SensorReading(45.0, '%', "Humidity"),
-    SensorReading(25.0, '%', "Soil Moisture"),
-    SensorReading(10000.0, 'lux', "Light"),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40.0),
-      child: Column(
-        spacing: 30,
-        children: [
-          for (int i = 0; i < _readings.length; i += 2)
-            Row(
-              spacing: 50,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                _readings[i],
-                if (i + 1 < _readings.length) _readings[i + 1],
-              ],
-            ),
-        ],
-      ),
     );
   }
 }
