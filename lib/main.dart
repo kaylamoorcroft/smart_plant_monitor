@@ -231,16 +231,6 @@ class _DataScreenState extends State<DataScreen> {
           color: Colors.green[50],
           child: Column(
             children: [
-              SensorPage(dataInfo: _dataInfo),
-              Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                Text("Last Updated:", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-                Text(lastUpdatedTime, style: Theme.of(context).textTheme.bodyMedium),
-                ],
-            ),
-          ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -249,15 +239,20 @@ class _DataScreenState extends State<DataScreen> {
                     icon: Icon(
                       Icons.settings,
                     size: 45.0,
-                    color: Colors.black,
+                    color: Colors.lightBlue[800],
                     ),
                   ),
                 ],
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              SensorPage(dataInfo: _dataInfo),
+              Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                ],
+                  Text("Last Updated:", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+                  Text(lastUpdatedTime, style: Theme.of(context).textTheme.bodyMedium),
+                  ],
+                ),
               ),
             ],
             
@@ -287,5 +282,5 @@ class _DataScreenState extends State<DataScreen> {
           ],
         ) ,
       );
-      }
     }
+  }
