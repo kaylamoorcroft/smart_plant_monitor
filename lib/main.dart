@@ -42,104 +42,87 @@ class ReadingModel {
   }
 }
 
-// class ReadingViewModel extends ChangeNotifier {
-//   final ReadingModel model;
-//   Data? data;
-//   String? errorMessage;
-//   bool loading = false;
+class ReadingViewModel extends ChangeNotifier {
+  final ReadingModel model;
+  Data? data;
+  String? errorMessage;
+  bool loading = true;
 
-//   ReadingViewModel(this.model) {
-//     getData();
-//   }
+  ReadingViewModel(this.model) {
+    print('Initializing ReadingViewModel');
+  }
 
-//   Future<void> getData() async {
-//     loading = true;
-//     notifyListeners();
-//     try {
-//       data = await model.getData();
-//       print('Data loaded: ${data!.toString()}'); // Temporary
-//       errorMessage = null; // Clear any previous errors.
-//     } on HttpException catch (error) {
-//       errorMessage = error.message;
-//       data = null;
-//     }
-//     loading = false;
-//     notifyListeners();
-//   }
+  Future<void> getData() async {
+    notifyListeners();
+    try {
+      data = await model.getData();
+      print('Data loaded: ${data!.toString()}'); // Temporary
+      errorMessage = null; // Clear any previous errors.
+    } on HttpException catch (error) {
+      errorMessage = error.message;
+      data = null;
+    }
+    loading = false;
+    notifyListeners();
+  }
 
-// }
-
-// class ReadingView extends StatelessWidget {
-//   ReadingView({super.key});
-
-//   final ReadingViewModel viewModel = ReadingViewModel(ReadingModel());
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Plant Overview'),
-//         actions: [],
-//       ),
-//       body: ListenableBuilder(
-//         listenable: viewModel,
-//         builder: (context, child) {
-//           return switch ((
-//             viewModel.loading,
-//             viewModel.data,
-//             viewModel.errorMessage,
-//           )) {
-//             (true, _, _) => Center(child: CircularProgressIndicator()),
-//             (false, _, String message) => Center(child: Text(message)),
-//             (false, null, null) => Center(
-//               child: Text('An unknown error has occurred'),
-//             ),
-//             // The summary must be non-null in this switch case.
-//             (false, Data data, null) => SensorPage(
-//               dataInfo: DataInfo.fromData(data),
-//               //reloadDataCallback: viewModel.getData,
-//             ),
-//           };
-//         },
-//       ),
-//       bottomNavigationBar: BottomAppBar(
-//         child: Container(
-//           height: 50,
-//           child: Center(
-//             child: Text('Buttons for navigation'),
-//           ),
-//         ),
-//       ) ,
-//     );
-//   }
-// }
+}
 
 class SensorPage extends StatelessWidget {
   const SensorPage({
     super.key,
     required this.dataInfo,
+    required this.lastUpdatedTime,
   });
 
   final List<DataInfo> dataInfo;
+  final String lastUpdatedTime;
   
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 40.0),
-      child: Column(
-        spacing: 30,
-        children: [
-          for (int i = 0; i < dataInfo.length; i += 2)
-            Row(
-              spacing: 50,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                SensorReading(dataInfo[i]),
-                if (i + 1 < dataInfo.length) SensorReading(dataInfo[i + 1]),
-              ],
+    return Column(
+      // color: Colors.green[50],
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+            IconButton(
+              onPressed: (){},
+              icon: Icon(
+                Icons.settings,
+                size: 45.0,
+                color: Colors.lightBlue[800],
+              ),
             ),
-        ],
-      ),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.only(top: 40.0),
+          child: Column(
+            spacing: 30,
+            children: [
+              for (int i = 0; i < dataInfo.length; i += 2)
+                Row(
+                  spacing: 50,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SensorReading(dataInfo[i]),
+                    if (i + 1 < dataInfo.length) SensorReading(dataInfo[i + 1]),
+                  ],
+                ),
+            ],
+          ),
+        ),
+        Expanded(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Text("Last Updated:", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
+              Text(lastUpdatedTime, style: Theme.of(context).textTheme.bodyMedium),
+            ],
+          ),
+        ),
+      ],
     );
   }
 }
@@ -186,7 +169,7 @@ class _DataScreenState extends State<DataScreen> {
   int prevId = -1;
   late Timer _timer;
   String lastUpdatedTime = "0000-00-00 00:00:00";
-  ReadingModel model = ReadingModel();
+  final ReadingViewModel viewModel = ReadingViewModel(ReadingModel());
 
   @override
   void initState() {
@@ -196,14 +179,14 @@ class _DataScreenState extends State<DataScreen> {
   }
 
   Future<void> _fetchData() async {
-    Data newData= await model.getData();
-    List<DataInfo> newDataInfo = DataInfo.fromData(newData);
-    if (newData.id != prevId) {
+    await viewModel.getData();
+    List<DataInfo> newDataInfo = DataInfo.fromData(viewModel.data!);
+    if (viewModel.data!.id != prevId) {
       print(newDataInfo); // Temporary
-      lastUpdatedTime = newData.time;
+      lastUpdatedTime = viewModel.data!.time;
       setState(() {
         _dataInfo = newDataInfo;
-        prevId = newData.id;
+        prevId = viewModel.data!.id;
       });
     }
   }
@@ -217,70 +200,48 @@ class _DataScreenState extends State<DataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.lightGreen[700],
-          foregroundColor: Colors.white,
-          title: Text(
-            'Plant Overview',
-          ),
-          actions: [],
+      appBar: AppBar(
+        backgroundColor: Colors.lightGreen[700],
+        foregroundColor: Colors.white,
+        title: Text(
+          'Plant Overview',
         ),
+        actions: [],
+      ),
 
-
-        body: Container(
-          color: Colors.green[50],
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  IconButton(
-                    onPressed: (){},
-                    icon: Icon(
-                      Icons.settings,
-                    size: 45.0,
-                    color: Colors.lightBlue[800],
-                    ),
-                  ),
-                ],
-              ),
-              SensorPage(dataInfo: _dataInfo),
-              Expanded(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Text("Last Updated:", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-                  Text(lastUpdatedTime, style: Theme.of(context).textTheme.bodyMedium),
-                  ],
-                ),
-              ),
-            ],
-            
-          ),
-        ),
-
-        bottomNavigationBar: BottomNavigationBar(
-          currentIndex: 0,
-          backgroundColor: Colors.lightGreen[700],
-          fixedColor: Colors.white,
-          unselectedItemColor: Colors.white,
-          items: const <BottomNavigationBarItem>[
-            BottomNavigationBarItem(
-              icon: Icon(Icons.home),
-              label: 'Home',
+      body: ListenableBuilder(
+        listenable: viewModel,
+        builder: (context, child) {
+          return switch ((
+            viewModel.loading,
+            viewModel.data,
+            viewModel.errorMessage,
+          )) {
+            (true, _, _) => Center(child: CircularProgressIndicator()),
+            (false, _, String message) => Center(child: Text(message)),
+            (false, null, null) => Center(
+              child: Text('An unknown error has occurred'),
             ),
-            
-            BottomNavigationBarItem(
-              icon: Icon(Icons.history),
-              label: 'History',
-
+            // The data must be non-null in this switch case.
+            (false, Data data, null) => SensorPage(
+              dataInfo: _dataInfo, 
+              lastUpdatedTime: lastUpdatedTime
             ),
-            BottomNavigationBarItem(
-              icon: Icon(Icons.description),
-              label: 'Plant Info',
-            )
-          ],
-        ) ,
-      );
-    }
+          };
+        },
+      ),
+
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        backgroundColor: Colors.lightGreen[700],
+        fixedColor: Colors.white,
+        unselectedItemColor: Colors.white,
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+          BottomNavigationBarItem(icon: Icon(Icons.description), label: 'Plant Info'),
+        ],
+      ) ,
+    );
   }
+}
