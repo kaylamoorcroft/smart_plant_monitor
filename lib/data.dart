@@ -29,7 +29,7 @@ class Data {
           light: light,
           moisture: moisture,
           temperature: temperature,
-          time: DateTime.parse(time).toLocal().toString(),
+          time: DateTime.parse(time).toLocal().toString().replaceAll('T', ' ').split('.').first, // Format to "YYYY-MM-DD HH:MM:SS"
         ),
       _ => throw FormatException('Could not deserialize Summary, json=$json'),
     };
