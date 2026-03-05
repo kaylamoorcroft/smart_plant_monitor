@@ -1,9 +1,10 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+
 import 'data.dart';
 
 void main() {
@@ -16,6 +17,7 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      
       home: DataScreen(),
     );
   }
@@ -156,7 +158,7 @@ class SensorReading extends StatelessWidget {
           height: 120,
           width: 120,
           decoration: BoxDecoration(
-          color: Colors.tealAccent, // TODO: Change color based on condition
+          color:Color.fromARGB(255, 247, 230, 100),
             borderRadius: BorderRadius.circular(50),
           ),
           child: Center(
@@ -167,7 +169,7 @@ class SensorReading extends StatelessWidget {
           ),
         ),
         Text(dataInfo.displayName, style: Theme.of(context).textTheme.bodyMedium), 
-      ],   
+      ],
     );
   }
 }
@@ -215,14 +217,22 @@ class _DataScreenState extends State<DataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Plant Overview'),
-        actions: [],
-      ),
-      body: Column(
-        children: [
-          SensorPage(dataInfo: _dataInfo),
-          Expanded(
+        appBar: AppBar(
+          backgroundColor: Colors.lightGreen[700],
+          foregroundColor: Colors.white,
+          title: Text(
+            'Plant Overview',
+          ),
+          actions: [],
+        ),
+
+
+        body: Container(
+          color: Colors.green[50],
+          child: Column(
+            children: [
+              SensorPage(dataInfo: _dataInfo),
+              Expanded(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -231,16 +241,51 @@ class _DataScreenState extends State<DataScreen> {
                 ],
             ),
           ),
-        ],
-      ),
-      bottomNavigationBar: BottomAppBar(
-        child: Container(
-          height: 50,
-          child: Center(
-            child: Text('Buttons for navigation'),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  IconButton(
+                    onPressed: (){},
+                    icon: Icon(
+                      Icons.settings,
+                    size: 45.0,
+                    color: Colors.black,
+                    ),
+                  ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                ],
+              ),
+            ],
+            
           ),
         ),
-      ),
-    );
-  }
-}
+
+        bottomNavigationBar: BottomNavigationBar(
+          currentIndex: 0,
+          backgroundColor: Colors.lightGreen[700],
+          fixedColor: Colors.white,
+          unselectedItemColor: Colors.white,
+          items: const <BottomNavigationBarItem>[
+            BottomNavigationBarItem(
+              icon: Icon(Icons.home),
+              label: 'Home',
+            ),
+            
+            BottomNavigationBarItem(
+              icon: Icon(Icons.history),
+              label: 'History',
+
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.description),
+              label: 'Plant Info',
+            )
+          ],
+        ) ,
+      );
+      }
+    }
