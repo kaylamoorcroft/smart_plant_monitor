@@ -180,14 +180,16 @@ class _DataScreenState extends State<DataScreen> {
 
   Future<void> _fetchData() async {
     await viewModel.getData();
-    List<DataInfo> newDataInfo = DataInfo.fromData(viewModel.data!);
-    if (viewModel.data!.id != prevId) {
-      print(newDataInfo); // Temporary
-      lastUpdatedTime = viewModel.data!.time;
-      setState(() {
-        _dataInfo = newDataInfo;
-        prevId = viewModel.data!.id;
-      });
+    if (viewModel.data != null) {
+      List<DataInfo> newDataInfo = DataInfo.fromData(viewModel.data!);
+      if (viewModel.data!.id != prevId) {
+        print(newDataInfo); // Temporary
+        lastUpdatedTime = viewModel.data!.time;
+        setState(() {
+          _dataInfo = newDataInfo;
+          prevId = viewModel.data!.id;
+        });
+      }
     }
   }
 
