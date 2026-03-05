@@ -156,7 +156,7 @@ class SensorReading extends StatelessWidget {
           height: 120,
           width: 120,
           decoration: BoxDecoration(
-          color: Colors.tealAccent,
+          color: Colors.tealAccent, // TODO: Change color based on condition
             borderRadius: BorderRadius.circular(50),
           ),
           child: Center(
@@ -180,7 +180,8 @@ class DataScreen extends StatefulWidget {
 }
 
 class _DataScreenState extends State<DataScreen> {
-  List<DataInfo> _dataInfo = [DataInfo(name: 'Loading...', unit: '', value: 0)];
+  List<DataInfo> _dataInfo = [DataInfo(name: 'Loading...', unit: '', value: 0, condition: Condition.unknown)];
+  int prevId = -1;
   late Timer _timer;
   String lastUpdatedTime = "0000-00-00 00:00:00";
   ReadingModel model = ReadingModel();
@@ -195,10 +196,12 @@ class _DataScreenState extends State<DataScreen> {
   Future<void> _fetchData() async {
     Data newData= await model.getData();
     List<DataInfo> newDataInfo = DataInfo.fromData(newData);
-    if (newDataInfo != _dataInfo) {
+    if (newData.id != prevId) {
+      print(newDataInfo); // Temporary
       lastUpdatedTime = newData.time;
       setState(() {
         _dataInfo = newDataInfo;
+        prevId = newData.id;
       });
     }
   }
