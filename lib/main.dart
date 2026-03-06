@@ -202,8 +202,9 @@ class _DataScreenState extends State<DataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(255, 238, 243, 246),
       appBar: AppBar(
-        backgroundColor: Colors.lightGreen[700],
+        backgroundColor: const Color.fromARGB(255, 131, 150, 169),
         foregroundColor: Colors.white,
         title: Text(
           'Plant Overview',
@@ -235,7 +236,7 @@ class _DataScreenState extends State<DataScreen> {
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
-        backgroundColor: Colors.lightGreen[700],
+        backgroundColor: const Color.fromARGB(255, 131, 150, 169),
         fixedColor: Colors.white,
         unselectedItemColor: Colors.white,
         items: const <BottomNavigationBarItem>[
