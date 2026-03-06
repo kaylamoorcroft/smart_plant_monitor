@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+import 'package:smart_plant_monitor/all_libraries.dart';
 
 import 'data.dart';
 
@@ -17,8 +18,11 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      
-      home: DataScreen(),
+      // initialRoute: '/',
+      routes: {
+        '/': (context) => DataScreen(), //replace home: DataScreen(),
+        '/tempGraph': (context) => TemperatureGraph(),
+      }
     );
   }
 }
@@ -84,15 +88,36 @@ class SensorPage extends StatelessWidget {
       // color: Colors.green[50],
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            IconButton(
-              onPressed: (){},
-              icon: Icon(
-                Icons.settings,
-                size: 45.0,
-                color: Colors.lightBlue[800],
-              ),
+            Column(
+              children: [
+                TextButton.icon(
+                  onPressed: () {
+                    Navigator.pushNamed(context, '/tempGraph');
+                  },
+                  icon: Icon(
+                    Icons.device_thermostat,
+                    color: Colors.lightBlue[800],
+                  ),
+                  label: Text('Temperature Graph'),
+                  style: TextButton.styleFrom(
+                    foregroundColor: Colors.lightBlue[800],
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              children: [
+                IconButton(
+                onPressed: (){},
+                icon: Icon(
+                  Icons.settings,
+                  size: 45.0,
+                  color: Colors.lightBlue[800],
+                  ),
+                ),
+              ],
             ),
           ],
         ),
