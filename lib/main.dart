@@ -21,7 +21,7 @@ class MainApp extends StatelessWidget {
       // initialRoute: '/',
       routes: {
         '/': (context) => DataScreen(), //replace home: DataScreen(),
-        '/tempGraph': (context) => TemperatureGraph(),
+        '/tempGraph': (context) => SensorGraph(),
       }
     );
   }
@@ -258,7 +258,7 @@ class _DataScreenState extends State<DataScreen> {
               child: Text('An unknown error has occurred'),
             ),
             // The data must be non-null in this switch case.
-            (false, Data data, null) => SensorPage(
+            (false, Data _, null) => SensorPage(
               dataInfo: _dataInfo, 
               lastUpdatedTime: lastUpdatedTime
             ),

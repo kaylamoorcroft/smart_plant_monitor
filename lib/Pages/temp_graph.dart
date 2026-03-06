@@ -5,36 +5,38 @@ import 'dart:convert';
 import 'dart:io';
 import '../data.dart';
 
-class TemperatureGraph extends StatelessWidget {
-  const TemperatureGraph({super.key});
+class SensorGraph extends StatelessWidget {
+  const SensorGraph({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        //TODO: dynamic title based on field being plotted
         title: Text('Temperature Graph'),
         backgroundColor: Colors.yellow[200],
       ),
-      body: SensorView(),
+      body: SensorView('humidity'),
     );
   }
 }
 
 class SensorModel {
-  Future<List<DataSpot>> getData() async {
+  Future<List<DataSpot>> getData(field) async {
     final uri = Uri.https(
       'muc-server.onrender.com',
-      '/data',
+      '/data/$field',
     );
     try {
       final response = await get(uri);
       if (response.statusCode != 200) {
         throw HttpException('Failed to update data');
       }
-      List<DataSpot> dataToPlot = DataSpot.fromJsonList(jsonDecode(response.body));
-      // for (DataSpot spot in dataToPlot) {
-      //   print("${DataSpot.getFormattedTime(spot.timeInMillis)}: ${spot.temperature} °C");
-      // }
+      //TODO: change how data is deserialized with new API endpoint
+      List<DataSpot> dataToPlot = DataSpot.fromJsonList(jsonDecode(response.body), field);
+      for (DataSpot spot in dataToPlot) {
+        print(spot);
+      }
       return dataToPlot;
     } on ClientException {
       throw HttpException('Failed to load data');
@@ -44,11 +46,12 @@ class SensorModel {
 
 class SensorViewModel extends ChangeNotifier {
   final SensorModel model;
+  final String field;
   List<DataSpot>? dataToPlot;
   String? errorMessage;
   bool loading = false;
 
-  SensorViewModel(this.model) {
+  SensorViewModel(this.model, this.field) {
     print('Initializing SensorViewModel');
     getData();
   }
@@ -57,7 +60,7 @@ class SensorViewModel extends ChangeNotifier {
     notifyListeners();
     loading = true;
     try {
-      dataToPlot = await model.getData();
+      dataToPlot = await model.getData(field);
       errorMessage = null; // Clear any previous errors.
     } on HttpException catch (error) {
       errorMessage = error.message;
@@ -70,9 +73,13 @@ class SensorViewModel extends ChangeNotifier {
 }
 
 class SensorView extends StatelessWidget {
-  SensorView({super.key});
+  final String field;
+  late final SensorViewModel viewModel;
 
-  final SensorViewModel viewModel = SensorViewModel(SensorModel());
+  SensorView(this.field, {super.key}) {
+    viewModel = SensorViewModel(SensorModel(), field);
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -91,7 +98,7 @@ class SensorView extends StatelessWidget {
           ),
           // The data must be non-null in this switch case.
           (false, List<DataSpot> dataToPlot, null) => SensorChart(
-            data: dataToPlot.map((spot) => FlSpot(spot.timeInMillis, spot.temperature)).toList())
+            data: dataToPlot.map((spot) => FlSpot(spot.timeInMillis, spot.value)).toList())
         };
       },
     );
@@ -128,7 +135,7 @@ class SensorChart extends StatelessWidget {
                   sideTitles: SideTitles(
                     showTitles: true,
                     reservedSize: 35,
-                    interval: dynamicIntervalX, //3600000, // Optional: set interval in microseconds (e.g., 1 day) for titles
+                    interval: dynamicIntervalX,
                     getTitlesWidget: (value, meta) {
                       if ((value > meta.max - (meta.appliedInterval * 0.5) && value != meta.max) 
                         || (value < meta.min + (meta.appliedInterval * 0.5) && value != meta.min)) {
@@ -173,6 +180,7 @@ class SensorChart extends StatelessWidget {
                     interval: dynamicIntervalY,
                   ),
                   axisNameWidget: const Text(
+                    //TODO: make this dynamic based on the field being plotted
                     'Temperature (˚C)',
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),

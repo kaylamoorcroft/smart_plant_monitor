@@ -20,7 +20,7 @@ class Data {
   double temperature;
   String time;
 
-  /// Returns a new [Summary] instance
+  /// Returns a new [Data] instance
   static Data fromJson(Map<String, Object?> json) {
     return switch (json) {
       { 
@@ -37,9 +37,9 @@ class Data {
           light: light,
           moisture: moisture,
           temperature: temperature,
-          time: DateTime.parse(time).toLocal().toString().replaceAll('T', ' ').split('.').first, // Format to "YYYY-MM-DD HH:MM:SS"
+          time: (time).replaceAll('T', ' '), //.split('.').first, // Format to "YYYY-MM-DD HH:MM:SS"
         ),
-      _ => throw FormatException('Could not deserialize Summary, json=$json'),
+      _ => throw FormatException('Could not deserialize Data, json=$json'),
     };
   }
 
@@ -86,30 +86,34 @@ class DataInfo {
 }
 
 class DataSpot {
-  DataSpot(this.data);
+  DataSpot({required this.value, required this.timeInMillis});
 
-  final Data data;
-  DateTime get datetime => DateTime.parse(data.time);
-
-  double get temperature => data.temperature;
-  int get humidity => data.humidity;
-  int get light => data.light;
-  int get moisture => data.moisture;
-  double get timeInMillis => datetime.millisecondsSinceEpoch.toDouble();
+  final double value;
+  final double timeInMillis;
   
   static String getFormattedTime(double millis) {
     DateTime datetime = DateTime.fromMillisecondsSinceEpoch(millis.toInt());
     return DateFormat.Md().add_Hm().format(datetime); // e.g., "1/1 13:00"
   }
 
-  static List<DataSpot> fromJsonList(List<dynamic> jsonList) {
+  static DataSpot _fromJson(Map<String, Object?> json, String field) {
+    final value = json[field] as double;
+    final time = json['time'] as String;
+    
+    return DataSpot(
+      value: value,
+      timeInMillis: DateTime.parse(time).millisecondsSinceEpoch.toDouble(), 
+    );
+  }
+
+  static List<DataSpot> fromJsonList(List<dynamic> jsonList, String field) {
     return jsonList
-      .map((item) => DataSpot(Data.fromJson(item as Map<String, Object?>)))
+      .map((item) => DataSpot._fromJson(item as Map<String, Object?>, field))
       .toList();
   }
 
   @override
-  String toString() => 'DataSpot[time=${getFormattedTime(timeInMillis)}, temperature=$temperature, humidity=$humidity, light=$light, moisture=$moisture]';
+  String toString() => 'DataSpot[time=${getFormattedTime(timeInMillis)}, value=$value]';
 }
 
 class DataUtils {
@@ -144,21 +148,10 @@ class DataUtils {
 
 void main() {
   Map<String, Object?> json = {
-    'id': 1,
-    'humidity': 50,
-    'light': 100,
-    'moisture': 30,
     'temperature': 25.5,
     'time': DateTime.now().toUtc().toString(),
   };
 
-  final data = Data.fromJson(json);
-  print(data);
-  DataSpot dataSpot = DataSpot(data);
+  DataSpot dataSpot = DataSpot._fromJson(json, 'temperature');
   print(dataSpot);
-  print("Temperature: ${dataSpot.temperature} °C");
-  print("Humidity: ${dataSpot.humidity} %");
-  print("Light: ${dataSpot.light} lux");
-  print("Moisture: ${dataSpot.moisture} %");
-  print("Time: ${dataSpot.timeInMillis}");
 }
