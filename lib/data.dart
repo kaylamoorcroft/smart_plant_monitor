@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 enum Condition { good, warning, critical, unknown }
 
 class Data {
@@ -83,6 +85,33 @@ class DataInfo {
   String get displayName => name[0].toUpperCase() + name.substring(1);
 }
 
+class DataSpot {
+  DataSpot(this.data);
+
+  final Data data;
+  DateTime get datetime => DateTime.parse(data.time);
+
+  double get temperature => data.temperature;
+  int get humidity => data.humidity;
+  int get light => data.light;
+  int get moisture => data.moisture;
+  double get timeInMillis => datetime.millisecondsSinceEpoch.toDouble();
+  
+  static String getFormattedTime(double millis) {
+    DateTime datetime = DateTime.fromMillisecondsSinceEpoch(millis.toInt());
+    return DateFormat.Md().add_Hm().format(datetime); // e.g., "1/1 13:00"
+  }
+
+  static List<DataSpot> fromJsonList(List<dynamic> jsonList) {
+    return jsonList
+      .map((item) => DataSpot(Data.fromJson(item as Map<String, Object?>)))
+      .toList();
+  }
+
+  @override
+  String toString() => 'DataSpot[time=${getFormattedTime(timeInMillis)}, temperature=$temperature, humidity=$humidity, light=$light, moisture=$moisture]';
+}
+
 class DataUtils {
   static Condition getCondition(String sensorType, int value) {
     switch (sensorType) {
@@ -125,4 +154,11 @@ void main() {
 
   final data = Data.fromJson(json);
   print(data);
+  DataSpot dataSpot = DataSpot(data);
+  print(dataSpot);
+  print("Temperature: ${dataSpot.temperature} °C");
+  print("Humidity: ${dataSpot.humidity} %");
+  print("Light: ${dataSpot.light} lux");
+  print("Moisture: ${dataSpot.moisture} %");
+  print("Time: ${dataSpot.timeInMillis}");
 }

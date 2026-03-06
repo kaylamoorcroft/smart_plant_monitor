@@ -27,6 +27,8 @@ class MainApp extends StatelessWidget {
   }
 }
 
+// Model-View-ViewModel (MVVM) architecture
+// ReadingModel gets data from API
 class ReadingModel {
   Future<Data> getData() async {
     final uri = Uri.https(
@@ -46,6 +48,8 @@ class ReadingModel {
   }
 }
 
+// ReadingViewModel manages the state of the data and notifies listeners when it changes.
+// It also handles the logic of fetching data and error handling.
 class ReadingViewModel extends ChangeNotifier {
   final ReadingModel model;
   Data? data;
@@ -72,6 +76,7 @@ class ReadingViewModel extends ChangeNotifier {
 
 }
 
+// home page design
 class SensorPage extends StatelessWidget {
   const SensorPage({
     super.key,
@@ -152,6 +157,7 @@ class SensorPage extends StatelessWidget {
   }
 }
 
+// Widget to display individual sensor readings ("tile")
 class SensorReading extends StatelessWidget {
   const SensorReading(this.dataInfo, {super.key});
 
@@ -182,12 +188,14 @@ class SensorReading extends StatelessWidget {
   }
 }
 
+// DataScreen is the main screen that displays the sensor data. It uses a timer to periodically fetch new data and updates the UI accordingly.
 class DataScreen extends StatefulWidget {
   const DataScreen({super.key});
 
   @override
   _DataScreenState createState() => _DataScreenState();
 }
+
 
 class _DataScreenState extends State<DataScreen> {
   List<DataInfo> _dataInfo = [DataInfo(name: 'Loading...', unit: '', value: 0, condition: Condition.unknown)];
@@ -236,7 +244,6 @@ class _DataScreenState extends State<DataScreen> {
         ),
         actions: [],
       ),
-
       body: ListenableBuilder(
         listenable: viewModel,
         builder: (context, child) {
