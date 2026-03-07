@@ -21,7 +21,7 @@ class MainApp extends StatelessWidget {
       // initialRoute: '/',
       routes: {
         '/': (context) => DataScreen(), //replace home: DataScreen(),
-        '/tempGraph': (context) => SensorGraph(),
+        '/sensorGraph': (context) => SensorGraph(),
       }
     );
   }
@@ -99,7 +99,13 @@ class SensorPage extends StatelessWidget {
               children: [
                 TextButton.icon(
                   onPressed: () {
-                    Navigator.pushNamed(context, '/tempGraph');
+                    Navigator.pushNamed(context, '/sensorGraph', 
+                      arguments: GraphArguments(
+                        title: 'Temperature Graph', 
+                        field: 'temperature', 
+                        yLabel: 'Temperature (˚C)'
+                      ),
+                    );
                   },
                   icon: Icon(
                     Icons.device_thermostat,

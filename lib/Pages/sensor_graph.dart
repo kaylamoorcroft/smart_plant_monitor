@@ -5,18 +5,26 @@ import 'dart:convert';
 import 'dart:io';
 import '../data.dart';
 
+class GraphArguments {
+  final String field;
+  final String yLabel;
+  final String title;
+
+  GraphArguments({required this.field, required this.yLabel, required this.title});
+}
+
 class SensorGraph extends StatelessWidget {
   const SensorGraph({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as GraphArguments;
     return Scaffold(
       appBar: AppBar(
-        //TODO: dynamic title based on field being plotted
-        title: Text('Temperature Graph'),
+        title: Text(args.title),
         backgroundColor: Colors.yellow[200],
       ),
-      body: SensorView('humidity'),
+      body: SensorView(args),
     );
   }
 }
@@ -32,7 +40,6 @@ class SensorModel {
       if (response.statusCode != 200) {
         throw HttpException('Failed to update data');
       }
-      //TODO: change how data is deserialized with new API endpoint
       List<DataSpot> dataToPlot = DataSpot.fromJsonList(jsonDecode(response.body), field);
       for (DataSpot spot in dataToPlot) {
         print(spot);
@@ -73,11 +80,11 @@ class SensorViewModel extends ChangeNotifier {
 }
 
 class SensorView extends StatelessWidget {
-  final String field;
+  final GraphArguments args;
   late final SensorViewModel viewModel;
 
-  SensorView(this.field, {super.key}) {
-    viewModel = SensorViewModel(SensorModel(), field);
+  SensorView(this.args, {super.key}) {
+    viewModel = SensorViewModel(SensorModel(), args.field);
   }
 
 
@@ -98,6 +105,7 @@ class SensorView extends StatelessWidget {
           ),
           // The data must be non-null in this switch case.
           (false, List<DataSpot> dataToPlot, null) => SensorChart(
+            yLabel: args.yLabel,
             data: dataToPlot.map((spot) => FlSpot(spot.timeInMillis, spot.value)).toList())
         };
       },
@@ -106,9 +114,10 @@ class SensorView extends StatelessWidget {
 }
 
 class SensorChart extends StatelessWidget {
-  const SensorChart({super.key, required this.data});
+  const SensorChart({super.key, required this.data, required this.yLabel});
 
   final List<FlSpot> data;
+  final String yLabel;
 
   @override
   Widget build(BuildContext context) {
@@ -179,9 +188,8 @@ class SensorChart extends StatelessWidget {
                     reservedSize: 30,
                     interval: dynamicIntervalY,
                   ),
-                  axisNameWidget: const Text(
-                    //TODO: make this dynamic based on the field being plotted
-                    'Temperature (˚C)',
+                  axisNameWidget: Text(
+                    yLabel,
                     style: TextStyle(fontWeight: FontWeight.bold),
                   ),
                   axisNameSize: 25,
