@@ -41,9 +41,9 @@ class SensorModel {
         throw HttpException('Failed to update data');
       }
       List<DataSpot> dataToPlot = DataSpot.fromJsonList(jsonDecode(response.body), field);
-      for (DataSpot spot in dataToPlot) {
-        print(spot);
-      }
+      // for (DataSpot spot in dataToPlot) {
+      //   print(spot);
+      // }
       return dataToPlot;
     } on ClientException {
       throw HttpException('Failed to load data');
@@ -125,11 +125,13 @@ class SensorChart extends StatelessWidget {
       padding: const EdgeInsets.only(left: 5.0, right: 25.0, top: 10.0, bottom: 10.0),
       child: LayoutBuilder(
         builder: (context, constraints) {
-          final double minX = data.map((spot) => spot.x).reduce((a, b) => a < b ? a : b);
-          final double maxX = data.map((spot) => spot.x).reduce((a, b) => a > b ? a : b);
-          final double minY = data.map((spot) => spot.y).reduce((a, b) => a < b ? a : b);
-          final double maxY = data.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
-          // Calculate interval: e.g., show a label every 50 pixels
+          double minX = data.map((spot) => spot.x).reduce((a, b) => a < b ? a : b);
+          double maxX = data.map((spot) => spot.x).reduce((a, b) => a > b ? a : b);
+          double minY = data.map((spot) => spot.y).reduce((a, b) => a < b ? a : b);
+          double maxY = data.map((spot) => spot.y).reduce((a, b) => a > b ? a : b);
+          maxY = (minY == maxY) ? maxY + 1 : maxY; 
+          maxX = (minX == maxX) ? maxX + 1 : maxX;
+          // Calculate interval: e.g., show a label every 50 pixels 
           double dynamicIntervalX = (maxX - minX) / (constraints.maxWidth / 50);
           double dynamicIntervalY = (maxY - minY) / (constraints.maxHeight / 50);
 
@@ -172,11 +174,11 @@ class SensorChart extends StatelessWidget {
                         || (value < meta.min + (meta.appliedInterval * 0.5) && value != meta.min)) {
                         return const SizedBox.shrink(); 
                       }
-                      // Return your custom widget for the labels
+                      // Return custom widget for the labels
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: Text(
-                          value.toStringAsFixed(1), // Convert the value to a fixed-point number with 1 decimal place
+                          yLabel[0] == 'T' ? value.toStringAsFixed(1) : value.toStringAsFixed(0), // Show 1 decimal for temperature, 0 for others
                           style: const TextStyle(
                             color: Colors.black,
                             fontSize: 10,
@@ -185,7 +187,7 @@ class SensorChart extends StatelessWidget {
                         ),
                       );
                     },
-                    reservedSize: 30,
+                    reservedSize: yLabel[0] == 'L' ? 45 : 30, // more space for light sensor values
                     interval: dynamicIntervalY,
                   ),
                   axisNameWidget: Text(

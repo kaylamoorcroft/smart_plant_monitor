@@ -82,6 +82,7 @@ class DataInfo {
   String toString() => '$name: $value $unit (${condition.toString().split(".").last})';
 
   String get displayValue => '$value $unit';
+  String get sensorLabel => name.substring(name.indexOf(' ') + 1).toLowerCase();
   String get displayName => name[0].toUpperCase() + name.substring(1);
 }
 

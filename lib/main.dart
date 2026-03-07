@@ -93,42 +93,15 @@ class SensorPage extends StatelessWidget {
       // color: Colors.green[50],
       children: [
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Column(
-              children: [
-                TextButton.icon(
-                  onPressed: () {
-                    Navigator.pushNamed(context, '/sensorGraph', 
-                      arguments: GraphArguments(
-                        title: 'Temperature Graph', 
-                        field: 'temperature', 
-                        yLabel: 'Temperature (˚C)'
-                      ),
-                    );
-                  },
-                  icon: Icon(
-                    Icons.device_thermostat,
-                    color: Colors.lightBlue[800],
-                  ),
-                  label: Text('Temperature Graph'),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.lightBlue[800],
-                  ),
-                ),
-              ],
-            ),
-            Column(
-              children: [
-                IconButton(
-                onPressed: (){},
-                icon: Icon(
-                  Icons.settings,
-                  size: 45.0,
-                  color: Colors.lightBlue[800],
-                  ),
-                ),
-              ],
+            IconButton(
+              onPressed: (){},
+              icon: Icon(
+                Icons.settings,
+                size: 45.0,
+                color: Colors.lightBlue[800],
+              ),
             ),
           ],
         ),
@@ -174,7 +147,14 @@ class SensorReading extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(20.0),
       onTap: () {
-        print('You clicked on: ${dataInfo.name}');
+        print('You clicked on: ${dataInfo.sensorLabel}');
+        Navigator.pushNamed(context, '/sensorGraph', 
+          arguments: GraphArguments(
+            title: '${dataInfo.name} Graph',
+            field: dataInfo.sensorLabel,
+            yLabel: '${dataInfo.name} (${dataInfo.unit})',
+          ),
+        );
       },
       splashColor: Colors.grey[300],
       child: Column(
@@ -252,9 +232,7 @@ class _DataScreenState extends State<DataScreen> {
       appBar: AppBar(
         backgroundColor: const Color.fromARGB(255, 131, 150, 169),
         foregroundColor: Colors.white,
-        title: Text(
-          'Plant Overview',
-        ),
+        title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
         actions: [],
       ),
       body: ListenableBuilder(
