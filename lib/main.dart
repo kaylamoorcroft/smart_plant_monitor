@@ -171,25 +171,32 @@ class SensorReading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      spacing: 10,
-      children: [
-        Container(
-          height: 120,
-          width: 120,
-          decoration: BoxDecoration(
-          color:Color.fromARGB(255, 247, 230, 100),
-            borderRadius: BorderRadius.circular(50),
-          ),
-          child: Center(
-            child: Text(
-              dataInfo.displayValue,
-              style: Theme.of(context).textTheme.titleLarge,
+    return InkWell(
+      borderRadius: BorderRadius.circular(20.0),
+      onTap: () {
+        print('You clicked on: ${dataInfo.name}');
+      },
+      splashColor: Colors.grey[300],
+      child: Column(
+        spacing: 10,
+        children: [
+          Container(
+            height: 120,
+            width: 120,
+            decoration: BoxDecoration(
+            color:Color.fromARGB(255, 247, 230, 100),
+              borderRadius: BorderRadius.circular(50),
+            ),
+            child: Center(
+              child: Text(
+                dataInfo.displayValue,
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
             ),
           ),
-        ),
-        Text(dataInfo.displayName, style: Theme.of(context).textTheme.bodyMedium), 
-      ],
+          Text(dataInfo.displayName, style: Theme.of(context).textTheme.bodyMedium), 
+        ],
+      ),
     );
   }
 }
