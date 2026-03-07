@@ -97,21 +97,8 @@ class SensorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            IconButton(
-              onPressed: (){},
-              icon: Icon(
-                Icons.settings,
-                size: 45.0,
-                // color: Colors.lightBlue[800],
-              ),
-            ),
-          ],
-        ),
         Padding(
-          padding: const EdgeInsets.only(top: 40.0),
+          padding: const EdgeInsets.only(top: 60.0),
           child: Column(
             spacing: 30,
             children: [
@@ -120,8 +107,8 @@ class SensorPage extends StatelessWidget {
                   spacing: 50,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SensorReading(dataInfo[i], dataInfo[i].condition),
-                    if (i + 1 < dataInfo.length) SensorReading(dataInfo[i + 1], dataInfo[i+1].condition),
+                    SensorReading(dataInfo[i]),
+                    if (i + 1 < dataInfo.length) SensorReading(dataInfo[i + 1]),
                   ],
                 ),
             ],
@@ -143,34 +130,32 @@ class SensorPage extends StatelessWidget {
 
 // Widget to display individual sensor readings ("tile")
 class SensorReading extends StatelessWidget {
-  const SensorReading(this.dataInfo, this.condition, {super.key});
+  const SensorReading(this.dataInfo, {super.key});
 
   final DataInfo dataInfo;
-  final Condition condition;
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      borderRadius: BorderRadius.circular(20.0),
-      onTap: () {
-        Navigator.pushNamed(context, '/sensorGraph', 
-          arguments: GraphArguments(
-            title: '${dataInfo.name} Graph',
-            field: dataInfo.sensorLabel,
-            yLabel: '${dataInfo.name} (${dataInfo.unit})',
-            latestTime: dataInfo.time,
-          ),
-        );
-      },
-      // splashColor: Colors.grey[300],
-      child: Column(
-        spacing: 10,
-        children: [
-          Container(
+    return Column(
+      spacing: 10,
+      children: [
+        InkWell(
+          borderRadius: BorderRadius.circular(20.0),
+          onTap: () {
+            Navigator.pushNamed(context, '/sensorGraph', 
+              arguments: GraphArguments(
+                title: '${dataInfo.name} Graph',
+                field: dataInfo.sensorLabel,
+                yLabel: '${dataInfo.name} (${dataInfo.unit})',
+                latestTime: dataInfo.time,
+              ),
+            );
+          },
+          child: Container(
             height: 120,
             width: 120,
             decoration: BoxDecoration(
-            color: switch(condition){
+            color: switch(dataInfo.condition){
               Condition.good => const Color.fromARGB(255, 0, 187, 119),
               Condition.warning => const Color.fromARGB (255, 247, 230, 100),
               Condition.critical => Colors.deepOrange[700],
@@ -185,9 +170,9 @@ class SensorReading extends StatelessWidget {
               ),
             ),
           ),
+        ),
           Text(dataInfo.displayName, style: Theme.of(context).textTheme.bodyMedium), 
         ],
-      ),
     );
   }
 }
@@ -244,7 +229,16 @@ class _DataScreenState extends State<DataScreen> {
         // backgroundColor: const Color.fromARGB(255, 131, 150, 169),
         // foregroundColor: Colors.white,
         title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
-        actions: [],
+        actions: <Widget>[
+          IconButton(
+            onPressed: (){},
+            icon: Icon(
+              Icons.settings,
+              size: 45.0,
+              // color: Colors.lightBlue[800],
+            ),
+          ),
+        ],
       ),
       body: ListenableBuilder(
         listenable: viewModel,
