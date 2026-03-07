@@ -7,6 +7,8 @@ import 'package:http/http.dart';
 import 'package:smart_plant_monitor/all_libraries.dart';
 
 import 'data.dart';
+import 'theme.dart';
+import 'util.dart';
 
 void main() {
   runApp(const MainApp());
@@ -17,7 +19,11 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final brightness = View.of(context).platformDispatcher.platformBrightness;
+    TextTheme textTheme = createTextTheme(context, "ABeeZee", "Poppins",);
+    MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
+      theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       // initialRoute: '/',
       routes: {
         '/': (context) => DataScreen(), //replace home: DataScreen(),
@@ -99,7 +105,7 @@ class SensorPage extends StatelessWidget {
               icon: Icon(
                 Icons.settings,
                 size: 45.0,
-                color: Colors.lightBlue[800],
+                // color: Colors.lightBlue[800],
               ),
             ),
           ],
@@ -156,7 +162,7 @@ class SensorReading extends StatelessWidget {
           ),
         );
       },
-      splashColor: Colors.grey[300],
+      // splashColor: Colors.grey[300],
       child: Column(
         spacing: 10,
         children: [
@@ -233,10 +239,10 @@ class _DataScreenState extends State<DataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color.fromARGB(255, 238, 243, 246),
+      // backgroundColor: const Color.fromARGB(255, 238, 243, 246),
       appBar: AppBar(
-        backgroundColor: const Color.fromARGB(255, 131, 150, 169),
-        foregroundColor: Colors.white,
+        // backgroundColor: const Color.fromARGB(255, 131, 150, 169),
+        // foregroundColor: Colors.white,
         title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
         actions: [],
       ),
@@ -264,9 +270,9 @@ class _DataScreenState extends State<DataScreen> {
 
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: 0,
-        backgroundColor: const Color.fromARGB(255, 131, 150, 169),
-        fixedColor: Colors.white,
-        unselectedItemColor: Colors.white,
+        // backgroundColor: const Color.fromARGB(255, 131, 150, 169),
+        // fixedColor: Colors.white,
+        // unselectedItemColor: Colors.white,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),

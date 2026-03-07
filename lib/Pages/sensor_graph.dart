@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:http/http.dart';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
+
 import '../data.dart';
 
 class GraphArguments {
@@ -23,7 +25,7 @@ class SensorGraph extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(args.title),
-        backgroundColor: Colors.yellow[200],
+        // backgroundColor: Colors.yellow[200],
       ),
       body: SensorView(args),
     );
@@ -180,7 +182,7 @@ class SensorChart extends StatelessWidget {
                         child: Text(
                           yLabel[0] == 'T' ? value.toStringAsFixed(1) : value.toStringAsFixed(0), // Show 1 decimal for temperature, 0 for others
                           style: const TextStyle(
-                            color: Colors.black,
+                            // color: Colors.black,
                             fontSize: 10,
                           ),
                           textAlign: TextAlign.right,
