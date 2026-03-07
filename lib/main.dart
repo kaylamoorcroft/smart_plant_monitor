@@ -90,7 +90,6 @@ class SensorPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      // color: Colors.green[50],
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
@@ -115,8 +114,8 @@ class SensorPage extends StatelessWidget {
                   spacing: 50,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SensorReading(dataInfo[i]),
-                    if (i + 1 < dataInfo.length) SensorReading(dataInfo[i + 1]),
+                    SensorReading(dataInfo[i], dataInfo[i].condition),
+                    if (i + 1 < dataInfo.length) SensorReading(dataInfo[i + 1], dataInfo[i+1].condition),
                   ],
                 ),
             ],
@@ -138,9 +137,10 @@ class SensorPage extends StatelessWidget {
 
 // Widget to display individual sensor readings ("tile")
 class SensorReading extends StatelessWidget {
-  const SensorReading(this.dataInfo, {super.key});
+  const SensorReading(this.dataInfo, this.condition, {super.key});
 
   final DataInfo dataInfo;
+  final Condition condition;
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +164,12 @@ class SensorReading extends StatelessWidget {
             height: 120,
             width: 120,
             decoration: BoxDecoration(
-            color:Color.fromARGB(255, 247, 230, 100),
+            color: switch(condition){
+              Condition.good => const Color.fromARGB(255, 0, 187, 119),
+              Condition.warning => const Color.fromARGB (255, 247, 230, 100),
+              Condition.critical => Colors.deepOrange[700],
+              _ => Colors.grey[200], //default if not matching a specific condition
+            },
               borderRadius: BorderRadius.circular(50),
             ),
             child: Center(
