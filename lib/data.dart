@@ -59,22 +59,24 @@ class DataInfo {
   final String unit;
   final int value;
   final Condition condition;
+  final String time;
 
   DataInfo({
     required this.name,
     required this.unit,
     required this.value,
     required this.condition,
+    required this.time,
   });
 
   static List<DataInfo> fromData(Data data) {
     return switch (data) {
-      Data(:final humidity, :final light, :final moisture, :final temperature) =>
+      Data(:final humidity, :final light, :final moisture, :final temperature, :final time) =>
         [
-          DataInfo(name: "Temperature", unit: '°C', value: temperature.round(), condition: DataUtils.getCondition('temperature', temperature.round())),
-          DataInfo(name: "Humidity", unit: '%', value: humidity, condition: DataUtils.getCondition('humidity', humidity)),
-          DataInfo(name: "Light", unit: 'lux', value: light, condition: DataUtils.getCondition('light', light)),
-          DataInfo(name: "Soil Moisture", unit: '%', value: moisture, condition: DataUtils.getCondition('moisture', moisture)),
+          DataInfo(name: "Temperature", unit: '°C', value: temperature.round(), condition: DataUtils.getCondition('temperature', temperature.round()), time: time),
+          DataInfo(name: "Humidity", unit: '%', value: humidity, condition: DataUtils.getCondition('humidity', humidity), time: time),
+          DataInfo(name: "Light", unit: 'lux', value: light, condition: DataUtils.getCondition('light', light), time: time),
+          DataInfo(name: "Soil Moisture", unit: '%', value: moisture, condition: DataUtils.getCondition('moisture', moisture), time: time),
         ],
     };  
   }

@@ -147,12 +147,12 @@ class SensorReading extends StatelessWidget {
     return InkWell(
       borderRadius: BorderRadius.circular(20.0),
       onTap: () {
-        print('You clicked on: ${dataInfo.sensorLabel}');
         Navigator.pushNamed(context, '/sensorGraph', 
           arguments: GraphArguments(
             title: '${dataInfo.name} Graph',
             field: dataInfo.sensorLabel,
             yLabel: '${dataInfo.name} (${dataInfo.unit})',
+            latestTime: dataInfo.time,
           ),
         );
       },
@@ -191,7 +191,7 @@ class DataScreen extends StatefulWidget {
 
 
 class _DataScreenState extends State<DataScreen> {
-  List<DataInfo> _dataInfo = [DataInfo(name: 'Loading...', unit: '', value: 0, condition: Condition.unknown)];
+  List<DataInfo> _dataInfo = [DataInfo(name: 'Loading...', unit: '', value: 0, condition: Condition.unknown, time: "0000-00-00 00:00:00")];
   int prevId = -1;
   late Timer _timer;
   String lastUpdatedTime = "0000-00-00 00:00:00";

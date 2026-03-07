@@ -9,8 +9,9 @@ class GraphArguments {
   final String field;
   final String yLabel;
   final String title;
+  final String latestTime;
 
-  GraphArguments({required this.field, required this.yLabel, required this.title});
+  GraphArguments({required this.field, required this.yLabel, required this.title, required this.latestTime});
 }
 
 class SensorGraph extends StatelessWidget {
@@ -30,10 +31,13 @@ class SensorGraph extends StatelessWidget {
 }
 
 class SensorModel {
-  Future<List<DataSpot>> getData(field) async {
+  Future<List<DataSpot>> getData(String field, String latestTime) async {
+    // Get date and time of last reading, subtract 1 day, and format to "YYYY-MM-DD HH:MM:SS"
+    final String startDate = DateTime.parse(latestTime).subtract(Duration(days: 1)).toString().split('.').first.replaceAll(' ', 'T'); 
     final uri = Uri.https(
       'muc-server.onrender.com',
       '/data/$field',
+      {'startDate': startDate}
     );
     try {
       final response = await get(uri);
@@ -41,9 +45,6 @@ class SensorModel {
         throw HttpException('Failed to update data');
       }
       List<DataSpot> dataToPlot = DataSpot.fromJsonList(jsonDecode(response.body), field);
-      // for (DataSpot spot in dataToPlot) {
-      //   print(spot);
-      // }
       return dataToPlot;
     } on ClientException {
       throw HttpException('Failed to load data');
@@ -54,12 +55,12 @@ class SensorModel {
 class SensorViewModel extends ChangeNotifier {
   final SensorModel model;
   final String field;
+  final String latestTime;
   List<DataSpot>? dataToPlot;
   String? errorMessage;
   bool loading = false;
 
-  SensorViewModel(this.model, this.field) {
-    print('Initializing SensorViewModel');
+  SensorViewModel(this.model, this.field, this.latestTime) {
     getData();
   }
 
@@ -67,7 +68,7 @@ class SensorViewModel extends ChangeNotifier {
     notifyListeners();
     loading = true;
     try {
-      dataToPlot = await model.getData(field);
+      dataToPlot = await model.getData(field, latestTime);
       errorMessage = null; // Clear any previous errors.
     } on HttpException catch (error) {
       errorMessage = error.message;
@@ -84,9 +85,8 @@ class SensorView extends StatelessWidget {
   late final SensorViewModel viewModel;
 
   SensorView(this.args, {super.key}) {
-    viewModel = SensorViewModel(SensorModel(), args.field);
+    viewModel = SensorViewModel(SensorModel(), args.field, args.latestTime);
   }
-
 
   @override
   Widget build(BuildContext context) {
