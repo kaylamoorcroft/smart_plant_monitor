@@ -139,8 +139,7 @@ class SensorReading extends StatelessWidget {
     return Column(
       spacing: 10,
       children: [
-        InkWell(
-          borderRadius: BorderRadius.circular(20.0),
+        GestureDetector(
           onTap: () {
             Navigator.pushNamed(context, '/sensorGraph', 
               arguments: GraphArguments(
