@@ -136,6 +136,12 @@ class SensorChart extends StatelessWidget {
           // Calculate interval: e.g., show a label every 50 pixels 
           double dynamicIntervalX = (maxX - minX) / (constraints.maxWidth / 50);
           double dynamicIntervalY = (maxY - minY) / (constraints.maxHeight / 50);
+          // Prevent intervals smaller than 1 to avoid rounding duplicates
+          dynamicIntervalY = dynamicIntervalY < 1 ? 
+            yLabel[0] == 'T' ? // finer grain for temperature
+              dynamicIntervalY < 0.1 ? 0.1 : dynamicIntervalY 
+            : dynamicIntervalY < 0.5 ? 0.5 : 1 
+          : dynamicIntervalY;
 
           return LineChart(
             LineChartData(
@@ -180,7 +186,7 @@ class SensorChart extends StatelessWidget {
                       return Padding(
                         padding: const EdgeInsets.only(right: 8.0),
                         child: Text(
-                          yLabel[0] == 'T' ? value.toStringAsFixed(1) : value.toStringAsFixed(0), // Show 1 decimal for temperature, 0 for others
+                          (yLabel[0] == 'T' || dynamicIntervalY < 1) ? value.toStringAsFixed(1) : value.toStringAsFixed(0), // Show 1 decimal for temperature, 0 for others
                           style: const TextStyle(
                             // color: Colors.black,
                             fontSize: 10,

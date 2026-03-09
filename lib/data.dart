@@ -100,7 +100,7 @@ class DataSpot {
   }
 
   static DataSpot _fromJson(Map<String, Object?> json, String field) {
-    final value = json[field] as double;
+    final value = (json[field] as num).toDouble();
     final time = json['time'] as String;
     
     return DataSpot(
