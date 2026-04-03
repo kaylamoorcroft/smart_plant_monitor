@@ -26,9 +26,63 @@ class MainApp extends StatelessWidget {
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
       // initialRoute: '/',
       routes: {
-        '/': (context) => DataScreen(), //replace home: DataScreen(),
+        '/': (context) => BaseScreen(), //replace home
         '/sensorGraph': (context) => SensorGraph(),
       }
+    );
+  }
+}
+
+// Include the base components for each core page: persistent app bar and navbar
+class BaseScreen extends StatefulWidget {
+  const BaseScreen({super.key});
+
+  @override
+  _BaseScreenState createState() => _BaseScreenState();
+}
+
+class _BaseScreenState extends State<BaseScreen> {
+  int _selectedIndex = 0; //for navbar
+
+  //nav to different "pages" w/ navbar (without routes)
+  final pages = [
+    DataScreen(),
+    HistoryScreen(),
+    PlantInfoScreen(),
+  ];
+
+void _onItemTapped(int index) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
+        actions: <Widget>[
+          IconButton(
+            onPressed: (){},
+            icon: Icon(
+              Icons.settings,
+              size: 45.0,
+              // color: Colors.lightBlue[800],
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        items: const <BottomNavigationBarItem>[
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
+          BottomNavigationBarItem(icon: Icon(Icons.description), label: 'Plant Info'),
+        ],
+        currentIndex: _selectedIndex, //change which nav button is selected
+        onTap: _onItemTapped,
+      ),
+      body: pages[_selectedIndex],
     );
   }
 }
@@ -184,7 +238,6 @@ class DataScreen extends StatefulWidget {
   _DataScreenState createState() => _DataScreenState();
 }
 
-
 class _DataScreenState extends State<DataScreen> {
   List<DataInfo> _dataInfo = [DataInfo(name: 'Loading...', unit: '', value: 0, condition: Condition.unknown, time: "0000-00-00 00:00:00")];
   int prevId = -1;
@@ -224,21 +277,6 @@ class _DataScreenState extends State<DataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       // backgroundColor: const Color.fromARGB(255, 238, 243, 246),
-      appBar: AppBar(
-        // backgroundColor: const Color.fromARGB(255, 131, 150, 169),
-        // foregroundColor: Colors.white,
-        title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
-        actions: <Widget>[
-          IconButton(
-            onPressed: (){},
-            icon: Icon(
-              Icons.settings,
-              size: 45.0,
-              // color: Colors.lightBlue[800],
-            ),
-          ),
-        ],
-      ),
       body: ListenableBuilder(
         listenable: viewModel,
         builder: (context, child) {
@@ -254,24 +292,12 @@ class _DataScreenState extends State<DataScreen> {
             ),
             // The data must be non-null in this switch case.
             (false, Data _, null) => SensorPage(
-              dataInfo: _dataInfo, 
+              dataInfo: _dataInfo,
               lastUpdatedTime: lastUpdatedTime
             ),
           };
         },
       ),
-
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 0,
-        // backgroundColor: const Color.fromARGB(255, 131, 150, 169),
-        // fixedColor: Colors.white,
-        // unselectedItemColor: Colors.white,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
-          BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.description), label: 'Plant Info'),
-        ],
-      ) ,
     );
   }
 }
