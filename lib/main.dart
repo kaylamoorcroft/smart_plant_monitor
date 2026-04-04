@@ -28,6 +28,7 @@ class MainApp extends StatelessWidget {
       routes: {
         '/': (context) => BaseScreen(), //replace home
         '/sensorGraph': (context) => SensorGraph(),
+        '/settings': (context) => Settings(),
       }
     );
   }
@@ -64,7 +65,9 @@ void _onItemTapped(int index) {
         title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
         actions: <Widget>[
           IconButton(
-            onPressed: (){},
+            onPressed: (){
+              Navigator.pushNamed(context, '/settings');
+            },
             icon: Icon(
               Icons.settings,
               size: 45.0,
@@ -195,7 +198,7 @@ class SensorReading extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/sensorGraph', 
+            Navigator.pushNamed(context, '/sensorGraph',
               arguments: GraphArguments(
                 title: '${dataInfo.name} Graph',
                 field: dataInfo.sensorLabel,

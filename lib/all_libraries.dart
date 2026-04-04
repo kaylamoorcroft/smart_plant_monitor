@@ -3,4 +3,5 @@
 export 'package:smart_plant_monitor/Pages/history.dart';
 export 'package:smart_plant_monitor/Pages/plant_info.dart';
 export 'package:smart_plant_monitor/Pages/sensor_graph.dart';
+export 'package:smart_plant_monitor/Pages/user_settings.dart';
 
