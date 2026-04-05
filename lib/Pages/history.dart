@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
-import 'package:smart_plant_monitor/data.dart';
-import 'package:http/http.dart';
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+
+import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:intl/intl.dart';
+import 'package:smart_plant_monitor/data.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -97,13 +98,13 @@ class HistoryInfo extends StatelessWidget {
             child: Column(
               spacing: 24, // space between dividers and labels
               children: [
-                Label(sensorType: "T"),
+                Label(icon: Icons.thermostat),
                 Divider(height: 1, endIndent: 40),
-                Label(sensorType: "L"),
+                Label(icon: Icons.wb_sunny),
                 Divider(height: 1, endIndent: 40),
-                Label(sensorType: "H"),
+                Label(icon: Icons.dew_point),
                 Divider(height: 1, endIndent: 40),
-                Label(sensorType: "S"),
+                Label(icon: Icons.water_drop),
               ],
             ),
           ),
@@ -157,8 +158,8 @@ class WeekDay extends StatelessWidget {
 
 //Formatting for sensor label letters
 class Label extends StatelessWidget {
-  final String sensorType;
-  const Label({required this.sensorType});
+  final IconData icon;
+  const Label({required this.icon});
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +173,7 @@ class Label extends StatelessWidget {
             border: Border.all(color: Colors.grey),
           ),
           child: Center(
-            child: Text(sensorType, style: TextStyle(fontSize: 28)),
+            child: Icon(icon, size: 30),
           ),
         ),
       ],
@@ -200,12 +201,7 @@ class SensorValue extends StatelessWidget {
             Condition.good => const Color.fromARGB(255, 0, 187, 119),
             Condition.warning => const Color.fromARGB(255, 247, 230, 100),
             Condition.critical => Colors.deepOrange[700],
-            _ => Color.fromARGB(
-              255,
-              196,
-              233,
-              221,
-            ), //default if not matching a specific condition
+            _ => Colors.grey[300], //default if not matching a specific condition
           },
         ),
         child: Center(child: Text(val == null ? '---' : val!.value.toString())),
