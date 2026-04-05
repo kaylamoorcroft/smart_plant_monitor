@@ -77,6 +77,7 @@ void _onItemTapped(int index) {
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Color.fromARGB(255, 15, 142, 70),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
