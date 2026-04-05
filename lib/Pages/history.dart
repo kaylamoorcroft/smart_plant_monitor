@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:smart_plant_monitor/data.dart';
+import 'package:http/http.dart';
+import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
+import 'package:intl/intl.dart';
 
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
@@ -8,31 +14,82 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryState extends State<HistoryScreen> {
+  late final DayAverageViewModel viewModel;
+
   @override
-  Widget build(BuildContext context){
+  void initState() {
+    super.initState();
+    viewModel = DayAverageViewModel(DayAverageModel());
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ListenableBuilder(
+      listenable: viewModel,
+      builder: (context, child) {
+        return switch ((
+          viewModel.loading,
+          viewModel.data,
+          viewModel.errorMessage,
+        )) {
+          (true, _, _) => Center(child: CircularProgressIndicator()),
+          (false, _, String message) => Center(child: Text(message)),
+          (false, null, null) => Center(
+            child: Text('An unknown error has occurred'),
+          ),
+          // The data must be non-null in this switch case.
+          (false, List<DayAverage> data, null) => HistoryInfo(data: data),
+        };
+      },
+    );
+  }
+}
+
+class HistoryInfo extends StatelessWidget {
+  final List<DayAverage> data;
+
+  const HistoryInfo({required this.data, super.key});
+
+  @override
+  Widget build(BuildContext context) {
     return Stack(
       children: [
         Column(
           children: [
             Container(
-              margin: const EdgeInsets.fromLTRB(90, 40, 0, 0), //margin offset for days of week
+              margin: const EdgeInsets.fromLTRB(
+                90,
+                40,
+                0,
+                0,
+              ), //margin offset for days of week
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: [
-                  WeekDay(day: "S"),
-                  WeekDay(day: "M"),
-                  WeekDay(day: "T"),
-                  WeekDay(day: "W"),
-                  WeekDay(day: "T"),
-                  WeekDay(day: "F"),
-                  WeekDay(day: "S"),
-                ],
-              )
+                children: data.map((entry) {
+                  return WeekDay(
+                    day: entry.weekday, // The key from your map
+                    hum: entry.humidity,
+                    temp: entry.temperature,
+                    light: entry.light,
+                    moisture: entry.moisture,
+                  );
+                }).toList(),
+                // [
+                //   WeekDay(day: "S"),
+                //   WeekDay(day: "M"),
+                //   WeekDay(day: "T"),
+                //   WeekDay(day: "W"),
+                //   WeekDay(day: "T"),
+                //   WeekDay(day: "F"),
+                //   WeekDay(day: "S"),
+                // ],
+              ),
             ),
           ],
         ),
-        
-        Positioned( //fix labels so not as to interfere with bubbles and days of week
+
+        Positioned(
+          //fix labels so not as to interfere with bubbles and days of week
           top: 110,
           left: 22,
           child: SizedBox(
@@ -41,11 +98,11 @@ class _HistoryState extends State<HistoryScreen> {
               spacing: 24, // space between dividers and labels
               children: [
                 Label(sensorType: "T"),
-                Divider(height: 1, endIndent: 40,),
+                Divider(height: 1, endIndent: 40),
                 Label(sensorType: "L"),
-                Divider(height: 1, endIndent: 40,),
+                Divider(height: 1, endIndent: 40),
                 Label(sensorType: "H"),
-                Divider(height: 1, endIndent: 40,),
+                Divider(height: 1, endIndent: 40),
                 Label(sensorType: "S"),
               ],
             ),
@@ -59,7 +116,18 @@ class _HistoryState extends State<HistoryScreen> {
 //Formatting for days of the week
 class WeekDay extends StatelessWidget {
   final String day;
-  const WeekDay({required this.day});
+  final DataInfo? temp;
+  final DataInfo? hum;
+  final DataInfo? light;
+  final DataInfo? moisture;
+  const WeekDay({
+    super.key,
+    required this.day,
+    this.temp,
+    this.hum,
+    this.light,
+    this.moisture,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -67,20 +135,21 @@ class WeekDay extends StatelessWidget {
       children: [
         Container(
           padding: EdgeInsets.all(4),
-          child:
-            Padding(
-              padding: EdgeInsetsGeometry.only(bottom: 40),
-              child:
-                Text(day, style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+          child: Padding(
+            padding: EdgeInsetsGeometry.only(bottom: 40),
+            child: Text(
+              day,
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
+          ),
         ),
-        SensorValue(),
+        SensorValue(val: temp),
         SizedBox(height: 66),
-        SensorValue(),
+        SensorValue(val: light),
         SizedBox(height: 65),
-        SensorValue(),
+        SensorValue(val: hum),
         SizedBox(height: 66),
-        SensorValue(),
+        SensorValue(val: moisture),
       ],
     );
   }
@@ -102,7 +171,9 @@ class Label extends StatelessWidget {
             borderRadius: BorderRadius.circular(3), //label corners
             border: Border.all(color: Colors.grey),
           ),
-          child: Center(child: Text(sensorType, style: TextStyle(fontSize: 28,))),
+          child: Center(
+            child: Text(sensorType, style: TextStyle(fontSize: 28)),
+          ),
         ),
       ],
     );
@@ -111,24 +182,97 @@ class Label extends StatelessWidget {
 
 //Formatting for sensor reading bubbles
 class SensorValue extends StatelessWidget {
-  const SensorValue({super.key});
+  const SensorValue({this.val, super.key});
+
+  final DataInfo? val;
 
   @override
   Widget build(BuildContext context) {
-    
     return Padding(
       padding: const EdgeInsets.all(2),
-      child:
-          Container(
-            height: 65,
-            width: 65,
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              border: Border.all(color: Colors.blueGrey),
-              color: const Color.fromARGB(255, 196, 233, 221),
-            ),
-            child: Center(child: Text("X")),
-          ),
+      child: Container(
+        height: 65,
+        width: 65,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.blueGrey),
+          color: switch (val?.condition) {
+            Condition.good => const Color.fromARGB(255, 0, 187, 119),
+            Condition.warning => const Color.fromARGB(255, 247, 230, 100),
+            Condition.critical => Colors.deepOrange[700],
+            _ => Color.fromARGB(
+              255,
+              196,
+              233,
+              221,
+            ), //default if not matching a specific condition
+          },
+        ),
+        child: Center(child: Text(val == null ? '---' : val!.value.toString())),
+      ),
     );
+  }
+}
+
+class DayAverageModel {
+  //Future<List<DataDayAverage>> getData() async {
+  Future<List<DayAverage>> getData() async {
+    // Get date and time of today, subtract 7 day, and format to "YYYY-MM-DD"
+    final String startDate = DateFormat(
+      'yyyy-MM-dd',
+    ).format(DateTime.now().subtract(Duration(days: 7)));
+    print('1 week ago: $startDate');
+
+    final uri = Uri.https('muc-server.onrender.com', '/data', {
+      'startDate': startDate, // TODO: add this param to server
+    });
+
+    try {
+      final response = await get(uri);
+      if (response.statusCode != 200) {
+        throw HttpException('Failed to update data');
+      }
+      List<Map<String, Object?>> json = (jsonDecode(response.body) as List)
+          .cast<Map<String, dynamic>>(); // cast to correct type to avoid error
+      List<DayAverage> data = DayAverage.getDailyAverages(
+        json.map((d) => Data.fromJson(d)).toList(),
+      );
+      if (data.length < 7) {
+        DayAverage.fillMissingDays(data);
+      }
+      print(data);
+      return data;
+    } on ClientException {
+      throw HttpException('Failed to load data');
+    }
+  }
+
+  int getAverageValue(String day, String field) {
+    return 0;
+  }
+}
+
+class DayAverageViewModel extends ChangeNotifier {
+  final DayAverageModel model;
+  List<DayAverage>? data;
+  String? errorMessage;
+  bool loading = false;
+
+  DayAverageViewModel(this.model) {
+    getData();
+  }
+
+  Future<void> getData() async {
+    notifyListeners();
+    loading = true;
+    try {
+      data = await model.getData();
+      errorMessage = null; // Clear any previous errors.
+    } on HttpException catch (error) {
+      errorMessage = error.message;
+      data = null;
+    }
+    loading = false;
+    notifyListeners();
   }
 }
