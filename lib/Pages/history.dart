@@ -58,14 +58,9 @@ class HistoryInfo extends StatelessWidget {
         Column(
           children: [
             Container(
-              margin: const EdgeInsets.fromLTRB(
-                90,
-                40,
-                0,
-                0,
-              ), //margin offset for days of week
+              margin: const EdgeInsets.fromLTRB(70, 40, 0, 0,), //margin offset for days of week
               child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: data.map((entry) {
                   return WeekDay(
                     day: entry.weekday, // The key from your map
@@ -91,19 +86,19 @@ class HistoryInfo extends StatelessWidget {
 
         Positioned(
           //fix labels so not as to interfere with bubbles and days of week
-          top: 110,
-          left: 22,
+          top: 94,
+          left: 14,
           child: SizedBox(
             width: MediaQuery.of(context).size.width,
             child: Column(
               spacing: 24, // space between dividers and labels
               children: [
                 Label(icon: Icons.thermostat),
-                Divider(height: 1, endIndent: 40),
+                Divider(height: 1, endIndent: 25),
                 Label(icon: Icons.wb_sunny),
-                Divider(height: 1, endIndent: 40),
+                Divider(height: 1, endIndent: 25),
                 Label(icon: Icons.dew_point),
-                Divider(height: 1, endIndent: 40),
+                Divider(height: 1, endIndent: 25),
                 Label(icon: Icons.water_drop),
               ],
             ),
@@ -140,16 +135,16 @@ class WeekDay extends StatelessWidget {
             padding: EdgeInsetsGeometry.only(bottom: 40),
             child: Text(
               day,
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
             ),
           ),
         ),
         SensorValue(val: temp),
-        SizedBox(height: 66),
+        SizedBox(height: 78),
         SensorValue(val: light),
-        SizedBox(height: 65),
+        SizedBox(height: 78),
         SensorValue(val: hum),
-        SizedBox(height: 66),
+        SizedBox(height: 80),
         SensorValue(val: moisture),
       ],
     );
@@ -166,14 +161,14 @@ class Label extends StatelessWidget {
     return Row(
       children: [
         Container(
-          width: 60,
-          height: 86,
+          width: 45,
+          height: 65,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3), //label corners
             border: Border.all(color: Colors.grey),
           ),
           child: Center(
-            child: Icon(icon, size: 30),
+            child: Icon(icon, size: 28),
           ),
         ),
       ],
@@ -190,10 +185,10 @@ class SensorValue extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(2),
+      padding: const EdgeInsets.only(top: 0),
       child: Container(
-        height: 65,
-        width: 65,
+        height: 35,
+        width: 35,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: Colors.blueGrey),
