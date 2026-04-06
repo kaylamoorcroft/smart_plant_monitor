@@ -278,25 +278,27 @@ class DataUtils {
   static Condition getCondition(String sensorType, int value) {
     switch (sensorType) {
       case 'temperature':
-        if (value < 15) return Condition.critical;
-        if (value < 20) return Condition.warning;
-        if (value <= 30) return Condition.good;
-        if (value > 45) return Condition.critical;
+        if (value < 13) return Condition.critical;
+        if (value < 18) return Condition.warning;
+        if (value <= 24) return Condition.good;
+        if (value > 28) return Condition.critical;
         return Condition.warning;
       case 'humidity':
         if (value < 30) return Condition.critical;
-        if (value < 50) return Condition.warning;
-        if (value <= 70) return Condition.good;
+        if (value < 40) return Condition.warning;
+        if (value <= 60) return Condition.good;
+        if (value > 70) return Condition.critical;
         return Condition.warning;
       case 'light':
-        if (value < 200) return Condition.critical;
-        if (value < 500) return Condition.warning;
+        if (value < 230) return Condition.critical;
+        if (value < 460) return Condition.warning;
         if (value <= 1000) return Condition.good;
         return Condition.warning;
       case 'moisture':
-        if (value < 20) return Condition.critical;
-        if (value < 40) return Condition.warning;
-        if (value <= 60) return Condition.good;
+        if (value <= 10) return Condition.critical;
+        if (value < 21) return Condition.warning;
+        if (value <= 40) return Condition.good;
+        if (value >= 80) return Condition.critical;
         return Condition.warning;
       default:
         return Condition.unknown;
