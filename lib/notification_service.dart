@@ -1,30 +1,35 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
 
 class NotificationService {
-    final FirebaseMessaging messaging = FirebaseMessaging.instance;
+  final FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-    // Future<void> requestPermission() async{
-    //     NotificationSettings settings = await messaging.requestPermission(
-    //     alert: true,
-    //     badge: true,
-    //     sound: true,
-    //     );
+  // Future<void> requestPermission() async{
+  //     NotificationSettings settings = await messaging.requestPermission(
+  //     alert: true,
+  //     badge: true,
+  //     sound: true,
+  //     );
 
-//Ask for permission to send notifications
-    Future<void> initFCM() async{
-        await messaging.requestPermission();
+  //Ask for permission to send notifications
+  Future<void> initFCM() async {
+    await messaging.requestPermission();
 
-        final fcmToken = await messaging.getToken();
-        print('FCM Token: $fcmToken');
+    if (Platform.isMacOS || Platform.isIOS) {
+      // Free developer accounts will always get 'null' here
+      String? apnsToken = await messaging.getAPNSToken();
 
-        //when app is opened but not in the foreground
-        FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-            print('Message: ${message.notification?.title}');
-        });
-
-        //send notif in app when app is active
-        FirebaseMessaging.onMessage.listen((RemoteMessage message) {
-            print('Message: ${message.notification?.title}');
-        });
+      if (apnsToken == null) {
+        print(
+          'Running with a free Developer account: Push notifications are disabled.',
+        );
+        return; // Exit to prevent the getToken() crash
+      }
     }
+
+    final fcmToken = await messaging.getToken();
+    print('FCM Token: $fcmToken');
+
+    await messaging.subscribeToTopic('plant_alerts');
+  }
 }
