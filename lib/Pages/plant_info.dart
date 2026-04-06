@@ -1,9 +1,9 @@
+import 'dart:async';
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
-import 'dart:async';
-import 'dart:convert';
 
 import 'plant_care.dart';
 
@@ -29,6 +29,20 @@ class _InfoState extends State<PlantInfoScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text("Plant Info", style: Theme.of(context).textTheme.headlineMedium),
+        actions: <Widget>[
+          IconButton(
+            onPressed: (){
+              Navigator.pushNamed(context, '/settings');
+            },
+            icon: Icon(
+              Icons.settings,
+              size: 45.0,
+            ),
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(

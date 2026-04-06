@@ -53,58 +53,74 @@ class HistoryInfo extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        Column(
-          children: [
-            Container(
-              margin: const EdgeInsets.fromLTRB(70, 40, 0, 0,), //margin offset for days of week
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: data.map((entry) {
-                  return WeekDay(
-                    day: entry.weekday, // The key from your map
-                    hum: entry.humidity,
-                    temp: entry.temperature,
-                    light: entry.light,
-                    moisture: entry.moisture,
-                  );
-                }).toList(),
-                // [
-                //   WeekDay(day: "S"),
-                //   WeekDay(day: "M"),
-                //   WeekDay(day: "T"),
-                //   WeekDay(day: "W"),
-                //   WeekDay(day: "T"),
-                //   WeekDay(day: "F"),
-                //   WeekDay(day: "S"),
-                // ],
-              ),
-            ),
-          ],
-        ),
-
-        Positioned(
-          //fix labels so not as to interfere with bubbles and days of week
-          top: 94,
-          left: 14,
-          child: SizedBox(
-            width: MediaQuery.of(context).size.width,
-            child: Column(
-              spacing: 24, // space between dividers and labels
-              children: [
-                Label(icon: Icons.thermostat),
-                Divider(height: 1, endIndent: 25),
-                Label(icon: Icons.wb_sunny),
-                Divider(height: 1, endIndent: 25),
-                Label(icon: Icons.dew_point),
-                Divider(height: 1, endIndent: 25),
-                Label(icon: Icons.water_drop),
-              ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("History", style: Theme.of(context).textTheme.headlineMedium),
+        actions: <Widget>[
+          IconButton(
+            onPressed: (){
+              Navigator.pushNamed(context, '/settings');
+            },
+            icon: Icon(
+              Icons.settings,
+              size: 45.0,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Container(
+                margin: const EdgeInsets.fromLTRB(70, 40, 0, 0,), //margin offset for days of week
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: data.map((entry) {
+                    return WeekDay(
+                      day: entry.weekday, // The key from your map
+                      hum: entry.humidity,
+                      temp: entry.temperature,
+                      light: entry.light,
+                      moisture: entry.moisture,
+                    );
+                  }).toList(),
+                  // [
+                  //   WeekDay(day: "S"),
+                  //   WeekDay(day: "M"),
+                  //   WeekDay(day: "T"),
+                  //   WeekDay(day: "W"),
+                  //   WeekDay(day: "T"),
+                  //   WeekDay(day: "F"),
+                  //   WeekDay(day: "S"),
+                  // ],
+                ),
+              ),
+            ],
+          ),
+
+          Positioned(
+            //fix labels so not as to interfere with bubbles and days of week
+            top: 98,
+            left: 14,
+            child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              child: Column(
+                spacing: 24, // space between dividers and labels
+                children: [
+                  Label(icon: Icons.thermostat),
+                  Divider(height: 1, endIndent: 25),
+                  Label(icon: Icons.wb_sunny),
+                  Divider(height: 1, endIndent: 25),
+                  Label(icon: Icons.dew_point),
+                  Divider(height: 1, endIndent: 25),
+                  Label(icon: Icons.water_drop),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -140,11 +156,11 @@ class WeekDay extends StatelessWidget {
           ),
         ),
         SensorValue(val: temp),
-        SizedBox(height: 78),
+        SizedBox(height: 76),
         SensorValue(val: light),
-        SizedBox(height: 78),
+        SizedBox(height: 72),
         SensorValue(val: hum),
-        SizedBox(height: 80),
+        SizedBox(height: 74),
         SensorValue(val: moisture),
       ],
     );
@@ -187,8 +203,8 @@ class SensorValue extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(top: 0),
       child: Container(
-        height: 35,
-        width: 35,
+        height: 40,
+        width: 40,
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           border: Border.all(color: Colors.blueGrey),

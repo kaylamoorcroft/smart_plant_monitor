@@ -61,21 +61,6 @@ void _onItemTapped(int index) {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
-        actions: <Widget>[
-          IconButton(
-            onPressed: (){
-              Navigator.pushNamed(context, '/settings');
-            },
-            icon: Icon(
-              Icons.settings,
-              size: 45.0,
-              // color: Colors.lightBlue[800],
-            ),
-          ),
-        ],
-      ),
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Color.fromARGB(255, 15, 142, 70),
         items: const <BottomNavigationBarItem>[
@@ -280,6 +265,21 @@ class _DataScreenState extends State<DataScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
+        actions: <Widget>[
+          IconButton(
+            onPressed: (){
+              Navigator.pushNamed(context, '/settings');
+            },
+            icon: Icon(
+              Icons.settings,
+              size: 45.0,
+              // color: Colors.lightBlue[800],
+            ),
+          ),
+        ],
+      ),
       // backgroundColor: const Color.fromARGB(255, 238, 243, 246),
       body: ListenableBuilder(
         listenable: viewModel,
