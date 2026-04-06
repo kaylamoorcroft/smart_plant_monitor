@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "828732015536",
+    "project_id": "smart-plant-health-monitor",
+    "storage_bucket": "smart-plant-health-monitor.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:828732015536:android:cea2c37d5f1c12a3c88c75",
+        "android_client_info": {
+          "package_name": "com.example.smart_plant_monitor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAKjoEol7SYWNGvCv2sbkJztm6YSo-1gNs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
