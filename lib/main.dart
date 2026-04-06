@@ -2,16 +2,36 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:smart_plant_monitor/all_libraries.dart';
+import 'package:smart_plant_monitor/firebase_options.dart';
+import 'package:smart_plant_monitor/notification_service.dart';
 
 import 'data.dart';
 import 'theme.dart';
 import 'util.dart';
 
-void main() {
+void main() async {
+   //firebase connection
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+
+  //Singleton of notificationService
+  final notificationService = NotificationService();
+  await notificationService.initFCM();
+
+
+  //handle notifs for when app is closed
+  FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
+
   runApp(const MainApp());
+}
+
+Future<void> handleBackgroundMessage(RemoteMessage message) async {
+  print('Message: ${message.notification?.title}');
 }
 
 class MainApp extends StatelessWidget {
