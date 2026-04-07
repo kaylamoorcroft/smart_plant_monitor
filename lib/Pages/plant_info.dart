@@ -155,7 +155,9 @@ class _InfoState extends State<PlantInfoScreen> {
                   viewModel.plantCareError,
                 )) {
                   (true, _, _) => Center(child: CircularProgressIndicator()),
-                  (false, _, String message) => Center(child: Text(message)),
+                  (false, _, String message) => Center(
+                    child: Text(message, textAlign: TextAlign.center),
+                  ),
                   (false, null, null) => Center(
                     child: Text("No plant selected..."),
                   ),
@@ -256,16 +258,19 @@ class PlantInfoModel {
     if (id < 1) return null;
     final uri = Uri.https(baseUrl, '/api/v2/species/details/$id', {'key': key});
     try {
-      print('making get request for plant care info...');
       final response = await get(uri);
-      if (response.statusCode != 200) {
+      print(
+        'Looking up plant info for plant with id $id... response status code: ${response.statusCode}',
+      );
+      if (response.statusCode == 429) {
+        throw HttpException(
+          'Plant id: $id\n API free tier only allows care info lookup for plant ids 1-3000',
+        );
+      } else if (response.statusCode != 200) {
         throw HttpException('Failed to fetch plant data');
       }
 
       PlantCare data = PlantCare.fromJson(jsonDecode(response.body));
-
-      print('plant care info for plant with id $id');
-      print(data);
       return data;
     } on ClientException {
       throw HttpException('Failed to load data');
@@ -279,15 +284,18 @@ class PlantInfoModel {
       'q': query,
     });
     try {
-      print('making get request for plant names...');
       final response = await get(uri);
-      print(response.statusCode);
-      if (response.statusCode != 200) {
+      print(
+        'looking up plant names that match query... response status code: ${response.statusCode}',
+      );
+
+      if (response.statusCode == 429) {
+        throw HttpException('API has reached max of 100 requests per day');
+      } else if (response.statusCode != 200) {
         throw HttpException('Failed to fetch plant data');
       }
 
       final data = PlantInfo.fromJsonList(jsonDecode(response.body)['data']);
-      print(data);
       return data; // Returns the list of plant matches
     } on ClientException {
       throw HttpException('Failed to load data');
