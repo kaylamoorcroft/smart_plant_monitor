@@ -236,10 +236,13 @@ class DayAverageModel {
     final String startDate = DateFormat(
       'yyyy-MM-dd',
     ).format(DateTime.now().subtract(Duration(days: 7)));
-    print('1 week ago: $startDate');
+    final String endDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+    print('date range for the last week: $startDate - $endDate');
 
+    // filter for values between start date (inclusive) to end date (exclusive)
     final uri = Uri.https('muc-server.onrender.com', '/data', {
-      'startDate': startDate, // TODO: add this param to server
+      'startDate': startDate,
+      'endDate': endDate,
     });
 
     try {

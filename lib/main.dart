@@ -120,9 +120,7 @@ class ReadingViewModel extends ChangeNotifier {
   String? errorMessage;
   bool loading = true;
 
-  ReadingViewModel(this.model) {
-    print('Initializing ReadingViewModel');
-  }
+  ReadingViewModel(this.model);
 
   Future<void> getData() async {
     notifyListeners();
