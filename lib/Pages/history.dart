@@ -55,16 +55,16 @@ class HistoryInfo extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("History", style: Theme.of(context).textTheme.headlineMedium),
+        title: Text(
+          "History",
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
         actions: <Widget>[
           IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pushNamed(context, '/settings');
             },
-            icon: Icon(
-              Icons.settings,
-              size: 45.0,
-            ),
+            icon: Icon(Icons.settings, size: 45.0),
           ),
         ],
       ),
@@ -73,7 +73,12 @@ class HistoryInfo extends StatelessWidget {
           Column(
             children: [
               Container(
-                margin: const EdgeInsets.fromLTRB(70, 40, 0, 0,), //margin offset for days of week
+                margin: const EdgeInsets.fromLTRB(
+                  70,
+                  40,
+                  0,
+                  0,
+                ), //margin offset for days of week
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: data.map((entry) {
@@ -108,13 +113,13 @@ class HistoryInfo extends StatelessWidget {
               child: Column(
                 spacing: 24, // space between dividers and labels
                 children: [
-                  Label(icon: Icons.thermostat),
+                  Label(icon: Icons.thermostat, label: "temp"),
                   Divider(height: 1, endIndent: 25),
-                  Label(icon: Icons.wb_sunny),
+                  Label(icon: Icons.wb_sunny, label: "light"),
                   Divider(height: 1, endIndent: 25),
-                  Label(icon: Icons.dew_point),
+                  Label(icon: Icons.dew_point, label: "hum"),
                   Divider(height: 1, endIndent: 25),
-                  Label(icon: Icons.water_drop),
+                  Label(icon: Icons.water_drop, label: "soil"),
                 ],
               ),
             ),
@@ -170,21 +175,28 @@ class WeekDay extends StatelessWidget {
 //Formatting for sensor label letters
 class Label extends StatelessWidget {
   final IconData icon;
-  const Label({required this.icon});
+  final String label;
+  const Label({super.key, required this.icon, required this.label});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
         Container(
+          padding: EdgeInsets.fromLTRB(4, 4, 4, 0),
           width: 45,
           height: 65,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(3), //label corners
             border: Border.all(color: Colors.grey),
           ),
-          child: Center(
-            child: Icon(icon, size: 28),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 3,
+            children: [
+              Icon(icon, size: 28),
+              Text(label, style: TextStyle(fontSize: 10)),
+            ],
           ),
         ),
       ],
@@ -212,7 +224,8 @@ class SensorValue extends StatelessWidget {
             Condition.good => const Color.fromARGB(255, 0, 187, 119),
             Condition.warning => const Color.fromARGB(255, 247, 230, 100),
             Condition.critical => Colors.deepOrange[700],
-            _ => Colors.grey[300], //default if not matching a specific condition
+            _ =>
+              Colors.grey[300], //default if not matching a specific condition
           },
         ),
         child: Center(child: Text(val == null ? '---' : val!.value.toString())),
