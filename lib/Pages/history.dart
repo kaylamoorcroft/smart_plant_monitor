@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_plant_monitor/data.dart';
 
+/// Main history page
 class HistoryScreen extends StatefulWidget {
   const HistoryScreen({super.key});
 
@@ -14,6 +15,7 @@ class HistoryScreen extends StatefulWidget {
   State<HistoryScreen> createState() => _HistoryState();
 }
 
+/// Controls loading / error / data display for history page
 class _HistoryState extends State<HistoryScreen> {
   late final DayAverageViewModel viewModel;
 
@@ -46,6 +48,7 @@ class _HistoryState extends State<HistoryScreen> {
   }
 }
 
+/// structure for history page bubbles
 class HistoryInfo extends StatelessWidget {
   final List<DayAverage> data;
 
@@ -90,15 +93,6 @@ class HistoryInfo extends StatelessWidget {
                       moisture: entry.moisture,
                     );
                   }).toList(),
-                  // [
-                  //   WeekDay(day: "S"),
-                  //   WeekDay(day: "M"),
-                  //   WeekDay(day: "T"),
-                  //   WeekDay(day: "W"),
-                  //   WeekDay(day: "T"),
-                  //   WeekDay(day: "F"),
-                  //   WeekDay(day: "S"),
-                  // ],
                 ),
               ),
             ],
@@ -130,7 +124,7 @@ class HistoryInfo extends StatelessWidget {
   }
 }
 
-//Formatting for days of the week
+/// Formatting for days of the week
 class WeekDay extends StatelessWidget {
   final String day;
   final DataInfo? temp;
@@ -172,7 +166,7 @@ class WeekDay extends StatelessWidget {
   }
 }
 
-//Formatting for sensor label letters
+/// Formatting for sensor label letters
 class Label extends StatelessWidget {
   final IconData icon;
   final String label;
@@ -204,7 +198,7 @@ class Label extends StatelessWidget {
   }
 }
 
-//Formatting for sensor reading bubbles
+/// Smaller sensor reading bubbles for history page
 class SensorValue extends StatelessWidget {
   const SensorValue({this.val, super.key});
 
@@ -234,6 +228,7 @@ class SensorValue extends StatelessWidget {
   }
 }
 
+/// Data for day averages for last week
 class DayAverageModel {
   //Future<List<DataDayAverage>> getData() async {
   Future<List<DayAverage>> getData() async {
@@ -266,12 +261,9 @@ class DayAverageModel {
       throw HttpException('Failed to load data');
     }
   }
-
-  int getAverageValue(String day, String field) {
-    return 0;
-  }
 }
 
+/// Determine what will be displayed for data averages
 class DayAverageViewModel extends ChangeNotifier {
   final DayAverageModel model;
   List<DayAverage>? data;

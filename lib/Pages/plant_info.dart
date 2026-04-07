@@ -7,6 +7,7 @@ import 'package:http/http.dart';
 
 import 'plant_care.dart';
 
+/// Main plant info screen
 class PlantInfoScreen extends StatefulWidget {
   const PlantInfoScreen({super.key});
 
@@ -14,6 +15,7 @@ class PlantInfoScreen extends StatefulWidget {
   State<PlantInfoScreen> createState() => _InfoState();
 }
 
+/// Controls loading / error / data display for history page
 class _InfoState extends State<PlantInfoScreen> {
   late final PlantInfoViewModel viewModel;
   int? plantId;
@@ -30,16 +32,16 @@ class _InfoState extends State<PlantInfoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Plant Info", style: Theme.of(context).textTheme.headlineMedium),
+        title: Text(
+          "Plant Info",
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
         actions: <Widget>[
           IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pushNamed(context, '/settings');
             },
-            icon: Icon(
-              Icons.settings,
-              size: 45.0,
-            ),
+            icon: Icon(Icons.settings, size: 45.0),
           ),
         ],
       ),
@@ -169,6 +171,7 @@ class _InfoState extends State<PlantInfoScreen> {
   }
 }
 
+/// Results of plant care info after search
 class PlantCareBox extends StatelessWidget {
   const PlantCareBox(this.plantCareInfo, {super.key});
 
@@ -230,6 +233,7 @@ class PlantCareBox extends StatelessWidget {
   }
 }
 
+/// Formatting for plantcare info
 class PlantCareRow extends StatelessWidget {
   const PlantCareRow(this.label, this.info, this.icon, {super.key});
 
@@ -243,6 +247,7 @@ class PlantCareRow extends StatelessWidget {
   }
 }
 
+/// Model to retrieve plant info from perenual API
 class PlantInfoModel {
   final String baseUrl = 'perenual.com';
   final String key = 'sk-cqrb69d184abc303a16136'; // need to move this to .env
@@ -256,30 +261,6 @@ class PlantInfoModel {
       if (response.statusCode != 200) {
         throw HttpException('Failed to fetch plant data');
       }
-      // Map<String, dynamic> jsonData = {
-      //   "id": 1,
-      //   "common_name": "European Silver Fir",
-      //   "scientific_name": ["Abies alba"],
-      //   "watering": "Frequent",
-      //   "watering_general_benchmark": {"value": "\"7-10\"", "unit": "days"},
-      //   "plant_anatomy": [],
-      //   "sunlight": ["full sun"],
-      //   "maintenance": null,
-      //   "care_guides":
-      //       "http://perenual.com/api/species-care-guide-list?species_id=1&key=sk-cqrb69d184abc303a16136",
-      //   "soil": [],
-      //   "growth_rate": "High",
-      //   "tropical": false,
-      //   "indoor": false,
-      //   "care_level": "Medium",
-      //   "description":
-      //       "European Silver Fir (Abies alba) is an amazing coniferous species native to mountainous regions of central Europe and the Balkans. It is an evergreen tree with a narrow, pyramidal shape and long, soft needles. Its bark is scaly grey-brown and its branches are highly ornamental due to its conical-shaped silver-tinged needles. It is pruned for use as an ornamental evergreen hedging and screening plant, and is also popular for use as a Christmas tree. Young trees grow quickly and have strong, flexible branches which makes them perfect for use as windbreaks. The European Silver Fir is an impressive species, making it ideal for gardens and public spaces.",
-      // };
-
-      // Encode Map to JSON string
-      //String jsonString = jsonEncode(jsonData);
-      //print(jsonString);
-      //PlantCare data = PlantCare.fromJson(jsonDecode(jsonString));
 
       PlantCare data = PlantCare.fromJson(jsonDecode(response.body));
 
@@ -305,28 +286,6 @@ class PlantInfoModel {
         throw HttpException('Failed to fetch plant data');
       }
 
-      // Map<String, dynamic> jsonData = {
-      //   "data": [
-      //     {
-      //       "id": 5257,
-      //       "common_name": "Swiss cheese plant",
-      //       "scientific_name": ["Monstera deliciosa"],
-      //     },
-      //     {
-      //       "id": 5258,
-      //       "common_name": "variegated Swiss cheese plant",
-      //       "scientific_name": ["Monstera deliciosa 'Variegata'"],
-      //     },
-      //     {
-      //       "id": 1,
-      //       "common_name": "European Silver Fir",
-      //       "scientific_name": ["Abies alba"],
-      //     },
-      //   ],
-      // };
-      // String jsonString = jsonEncode(jsonData);
-      // final data = PlantInfo.fromJsonList(jsonDecode(jsonString)['data']);
-
       final data = PlantInfo.fromJsonList(jsonDecode(response.body)['data']);
       print(data);
       return data; // Returns the list of plant matches
@@ -336,6 +295,7 @@ class PlantInfoModel {
   }
 }
 
+/// Determine data / error / loading icon to display in UI
 class PlantInfoViewModel extends ChangeNotifier {
   final PlantInfoModel model;
   List<PlantInfo>? plantInfo;

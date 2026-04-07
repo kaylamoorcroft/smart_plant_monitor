@@ -4,13 +4,6 @@ import 'dart:io';
 class NotificationService {
   final FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  // Future<void> requestPermission() async{
-  //     NotificationSettings settings = await messaging.requestPermission(
-  //     alert: true,
-  //     badge: true,
-  //     sound: true,
-  //     );
-
   //Ask for permission to send notifications
   Future<void> initFCM() async {
     await messaging.requestPermission();

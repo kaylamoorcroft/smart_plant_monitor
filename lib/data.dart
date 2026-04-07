@@ -2,8 +2,9 @@ import 'package:intl/intl.dart';
 
 enum Condition { good, warning, critical, unknown }
 
+/// data from the `/data` route on server
 class Data {
-  /// Returns a new [Data] instance.
+  /// Returns a new `Data` instance.
   Data({
     required this.id,
     required this.humidity,
@@ -57,6 +58,8 @@ class Data {
       ']';
 }
 
+/// Same format as `Data` but for containing average values (possibly empty),
+/// along with the abbreviation for the weekday, eg. 'Mon'
 class DayAverage {
   DayAverage({
     this.humidity,
@@ -127,6 +130,8 @@ class DayAverage {
     }).toList();
   }
 
+  /// if there non-consecutive days, fill the gaps in the middle or
+  /// start with the corresponding weekdays but null values for data
   static void fillMissingDays(List<DayAverage> data) {
     if (data.isEmpty) return;
 
@@ -173,6 +178,7 @@ class DayAverage {
   }
 }
 
+/// Detailed info for a single `Data` field - adds condition, name and unit
 class DataInfo {
   final String name;
   final String unit;
@@ -242,6 +248,7 @@ class DataInfo {
   String get displayName => name[0].toUpperCase() + name.substring(1);
 }
 
+/// Formatted data to be displayed on graphs plus other functionality for formatting
 class DataSpot {
   DataSpot({required this.value, required this.timeInMillis});
 
@@ -274,7 +281,9 @@ class DataSpot {
       'DataSpot[time=${getFormattedTime(timeInMillis)}, value=$value]';
 }
 
+/// Static class for any additional `Data` manipulation needed
 class DataUtils {
+  /// get the condition based on standard thresholds for plant sensor values
   static Condition getCondition(String sensorType, int value) {
     switch (sensorType) {
       case 'temperature':
@@ -304,43 +313,4 @@ class DataUtils {
         return Condition.unknown;
     }
   }
-}
-
-void main() {
-  List<Map<String, Object?>> json = [
-    {
-      "humidity": 44,
-      "id": 144,
-      "light": 860,
-      "moisture": 4,
-      "temperature": 18.339,
-      "time": "2026-04-03T11:43:46",
-    },
-    {
-      "humidity": 44,
-      "id": 145,
-      "light": 862,
-      "moisture": 2,
-      "temperature": 18.58999,
-      "time": "2026-04-05T11:53:48",
-    },
-    {
-      "humidity": 44,
-      "id": 146,
-      "light": 862,
-      "moisture": 4,
-      "temperature": 18.54899,
-      "time": "2026-04-05T12:03:51",
-    },
-  ];
-
-  List<DayAverage> dayAverage = DayAverage.getDailyAverages(
-    json.map((d) => Data.fromJson(d)).toList(),
-  );
-  DayAverage.fillMissingDays(dayAverage);
-  print(dayAverage);
-  // for (String day in dayAverage.keys) {
-  //   print(day);
-  //   print(dayAverage[day]);
-  // }
 }

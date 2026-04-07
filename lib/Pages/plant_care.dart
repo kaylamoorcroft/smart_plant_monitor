@@ -22,7 +22,7 @@ class PlantCare {
   String? watering;
   String? maintenance;
 
-  /// Returns a new [Data] instance
+  /// Returns a new [PlantCare] instance
   static PlantCare fromJson(Map<String, Object?> json) {
     return switch (json) {
       {
@@ -76,7 +76,7 @@ class PlantInfo {
   String commonName;
   String scientificName;
 
-  /// Returns a new [Data] instance
+  /// Returns a new [PlantInfo] instance
   static PlantInfo fromJson(Map<String, Object?> json) {
     return switch (json) {
       {

@@ -21,6 +21,7 @@ class GraphArguments {
   });
 }
 
+/// Page with graph title and graph
 class SensorGraph extends StatelessWidget {
   const SensorGraph({super.key});
 
@@ -37,6 +38,7 @@ class SensorGraph extends StatelessWidget {
   }
 }
 
+/// Model to get data for specific field from server
 class SensorModel {
   Future<List<DataSpot>> getData(String field, String latestTime) async {
     // Get date and time of last reading, subtract 1 day, and format to "YYYY-MM-DD HH:MM:SS"
@@ -65,6 +67,7 @@ class SensorModel {
   }
 }
 
+/// Determine data / error / loading icon to show in UI
 class SensorViewModel extends ChangeNotifier {
   final SensorModel model;
   final String field;
@@ -92,6 +95,7 @@ class SensorViewModel extends ChangeNotifier {
   }
 }
 
+/// Display corresponding UI according to ViewModel logic
 class SensorView extends StatelessWidget {
   final GraphArguments args;
   late final SensorViewModel viewModel;
@@ -128,6 +132,7 @@ class SensorView extends StatelessWidget {
   }
 }
 
+/// The graph for the specific sensor data with Fl_chart library
 class SensorChart extends StatelessWidget {
   const SensorChart({super.key, required this.data, required this.yLabel});
 

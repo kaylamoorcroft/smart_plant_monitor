@@ -6,6 +6,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart';
+
 import 'package:smart_plant_monitor/all_libraries.dart';
 import 'package:smart_plant_monitor/firebase_options.dart';
 import 'package:smart_plant_monitor/notification_service.dart';
@@ -15,14 +16,13 @@ import 'theme.dart';
 import 'util.dart';
 
 void main() async {
-   //firebase connection
+  //firebase connection
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
   //Singleton of notificationService
   final notificationService = NotificationService();
   await notificationService.initFCM();
-
 
   //handle notifs for when app is closed
   FirebaseMessaging.onBackgroundMessage(handleBackgroundMessage);
@@ -40,21 +40,20 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final brightness = View.of(context).platformDispatcher.platformBrightness;
-    TextTheme textTheme = createTextTheme(context, "ABeeZee", "Poppins",);
+    TextTheme textTheme = createTextTheme(context, "ABeeZee", "Poppins");
     MaterialTheme theme = MaterialTheme(textTheme);
     return MaterialApp(
       theme: brightness == Brightness.light ? theme.light() : theme.dark(),
-      // initialRoute: '/',
       routes: {
         '/': (context) => BaseScreen(), //replace home
         '/sensorGraph': (context) => SensorGraph(),
         '/settings': (context) => Settings(),
-      }
+      },
     );
   }
 }
 
-// Include the base components for each core page: persistent app bar and navbar
+/// Include the base components for each core page: persistent app bar and navbar
 class BaseScreen extends StatefulWidget {
   const BaseScreen({super.key});
 
@@ -66,17 +65,13 @@ class _BaseScreenState extends State<BaseScreen> {
   int _selectedIndex = 0; //for navbar
 
   //nav to different "pages" w/ navbar (without routes)
-  final pages = [
-    DataScreen(),
-    HistoryScreen(),
-    PlantInfoScreen(),
-  ];
+  final pages = [DataScreen(), HistoryScreen(), PlantInfoScreen()];
 
-void _onItemTapped(int index) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +81,10 @@ void _onItemTapped(int index) {
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.history), label: 'History'),
-          BottomNavigationBarItem(icon: Icon(Icons.description), label: 'Plant Info'),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.description),
+            label: 'Plant Info',
+          ),
         ],
         currentIndex: _selectedIndex, //change which nav button is selected
         onTap: _onItemTapped,
@@ -96,14 +94,11 @@ void _onItemTapped(int index) {
   }
 }
 
-// Model-View-ViewModel (MVVM) architecture
-// ReadingModel gets data from API
+/// Model-View-ViewModel (MVVM) architecture
+/// ReadingModel gets data from API
 class ReadingModel {
   Future<Data> getData() async {
-    final uri = Uri.https(
-      'muc-server.onrender.com',
-      '/data/latest',
-    );
+    final uri = Uri.https('muc-server.onrender.com', '/data/latest');
     try {
       final response = await get(uri);
       if (response.statusCode != 200) {
@@ -117,8 +112,8 @@ class ReadingModel {
   }
 }
 
-// ReadingViewModel manages the state of the data and notifies listeners when it changes.
-// It also handles the logic of fetching data and error handling.
+/// ReadingViewModel manages the state of the data and notifies listeners when it changes.
+/// It also handles the logic of fetching data and error handling.
 class ReadingViewModel extends ChangeNotifier {
   final ReadingModel model;
   Data? data;
@@ -133,7 +128,6 @@ class ReadingViewModel extends ChangeNotifier {
     notifyListeners();
     try {
       data = await model.getData();
-      print('Data loaded: ${data!.toString()}'); // Temporary
       errorMessage = null; // Clear any previous errors.
     } on HttpException catch (error) {
       errorMessage = error.message;
@@ -142,10 +136,9 @@ class ReadingViewModel extends ChangeNotifier {
     loading = false;
     notifyListeners();
   }
-
 }
 
-// home page design
+/// sensor info dashboard
 class SensorPage extends StatelessWidget {
   const SensorPage({
     super.key,
@@ -155,7 +148,7 @@ class SensorPage extends StatelessWidget {
 
   final List<DataInfo> dataInfo;
   final String lastUpdatedTime;
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -181,8 +174,16 @@ class SensorPage extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Text("Last Updated:", style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold)),
-              Text(lastUpdatedTime, style: Theme.of(context).textTheme.bodyMedium),
+              Text(
+                "Last Updated:",
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
+              ),
+              Text(
+                lastUpdatedTime,
+                style: Theme.of(context).textTheme.bodyMedium,
+              ),
             ],
           ),
         ),
@@ -191,7 +192,7 @@ class SensorPage extends StatelessWidget {
   }
 }
 
-// Widget to display individual sensor readings ("tile")
+/// Widget to display individual sensor readings ("tile")
 class SensorReading extends StatelessWidget {
   const SensorReading(this.dataInfo, {super.key});
 
@@ -204,7 +205,9 @@ class SensorReading extends StatelessWidget {
       children: [
         GestureDetector(
           onTap: () {
-            Navigator.pushNamed(context, '/sensorGraph',
+            Navigator.pushNamed(
+              context,
+              '/sensorGraph',
               arguments: GraphArguments(
                 title: '${dataInfo.name} Graph',
                 field: dataInfo.sensorLabel,
@@ -217,12 +220,14 @@ class SensorReading extends StatelessWidget {
             height: 120,
             width: 120,
             decoration: BoxDecoration(
-            color: switch(dataInfo.condition){
-              Condition.good => const Color.fromARGB(255, 0, 187, 119),
-              Condition.warning => const Color.fromARGB (255, 247, 230, 100),
-              Condition.critical => Colors.deepOrange[700],
-              _ => Colors.grey[200], //default if not matching a specific condition
-            },
+              color: switch (dataInfo.condition) {
+                Condition.good => const Color.fromARGB(255, 0, 187, 119),
+                Condition.warning => const Color.fromARGB(255, 247, 230, 100),
+                Condition.critical => Colors.deepOrange[700],
+                _ =>
+                  Colors
+                      .grey[200], //default if not matching a specific condition
+              },
               borderRadius: BorderRadius.circular(50),
             ),
             child: Center(
@@ -233,13 +238,17 @@ class SensorReading extends StatelessWidget {
             ),
           ),
         ),
-          Text(dataInfo.displayName, style: Theme.of(context).textTheme.bodyMedium), 
-        ],
+        Text(
+          dataInfo.displayName,
+          style: Theme.of(context).textTheme.bodyMedium,
+        ),
+      ],
     );
   }
 }
 
-// DataScreen is the main screen that displays the sensor data. It uses a timer to periodically fetch new data and updates the UI accordingly.
+/// DataScreen is the main screen that displays the sensor data.
+/// It uses a timer to periodically fetch new data and updates the UI accordingly.
 class DataScreen extends StatefulWidget {
   const DataScreen({super.key});
 
@@ -248,7 +257,15 @@ class DataScreen extends StatefulWidget {
 }
 
 class _DataScreenState extends State<DataScreen> {
-  List<DataInfo> _dataInfo = [DataInfo(name: 'Loading...', unit: '', value: 0, condition: Condition.unknown, time: "0000-00-00 00:00:00")];
+  List<DataInfo> _dataInfo = [
+    DataInfo(
+      name: 'Loading...',
+      unit: '',
+      value: 0,
+      condition: Condition.unknown,
+      time: "0000-00-00 00:00:00",
+    ),
+  ];
   int prevId = -1;
   late Timer _timer;
   String lastUpdatedTime = "0000-00-00 00:00:00";
@@ -266,6 +283,7 @@ class _DataScreenState extends State<DataScreen> {
     if (viewModel.data != null) {
       List<DataInfo> newDataInfo = DataInfo.fromData(viewModel.data!);
       if (viewModel.data!.id != prevId) {
+        print('New data from server:');
         print(newDataInfo); // Temporary
         lastUpdatedTime = viewModel.data!.time;
         setState(() {
@@ -286,10 +304,13 @@ class _DataScreenState extends State<DataScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Plant Overview', style: Theme.of(context).textTheme.headlineMedium),
+        title: Text(
+          'Plant Overview',
+          style: Theme.of(context).textTheme.headlineMedium,
+        ),
         actions: <Widget>[
           IconButton(
-            onPressed: (){
+            onPressed: () {
               Navigator.pushNamed(context, '/settings');
             },
             icon: Icon(
@@ -317,7 +338,7 @@ class _DataScreenState extends State<DataScreen> {
             // The data must be non-null in this switch case.
             (false, Data _, null) => SensorPage(
               dataInfo: _dataInfo,
-              lastUpdatedTime: lastUpdatedTime
+              lastUpdatedTime: lastUpdatedTime,
             ),
           };
         },
