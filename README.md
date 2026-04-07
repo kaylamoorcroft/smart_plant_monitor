@@ -14,6 +14,6 @@ The app acts as a real-time plant health dashboard with its main features includ
 - Run `flutter doctor` and fix any missing requirements or issues
 
 ## Usage
-Choose a target device and run `flutter execute` in the terminal to start the app. Alternatively, use the 'run' button in your IDE
+Choose a target device and execute `flutter run` in the terminal to start the app. Alternatively, use the 'run' button in your IDE
 
 Please note that plant alerts (notifications) currently only work on andoid due to development restrictions with ios/macOS and chrome.
