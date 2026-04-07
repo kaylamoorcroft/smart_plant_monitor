@@ -218,20 +218,22 @@ class SensorReading extends StatelessWidget {
             height: 120,
             width: 120,
             decoration: BoxDecoration(
-              color: switch (dataInfo.condition) {
-                Condition.good => const Color.fromARGB(255, 0, 187, 119),
-                Condition.warning => const Color.fromARGB(255, 247, 230, 100),
-                Condition.critical => Colors.deepOrange[700],
-                _ =>
-                  Colors
-                      .grey[200], //default if not matching a specific condition
-              },
+            color: switch(dataInfo.condition){
+              Condition.good => const Color.fromARGB(255, 0, 187, 119),
+              Condition.warning => const Color.fromARGB (255, 247, 230, 100),
+              // Condition.warning when MediaQuery.of(context).platformBrightness == Brightness.dark => const Color.fromARGB(255, 255, 189, 65),
+              // Condition.warning => MediaQuery.of(context).platformBrightness == Brightness.light ?  const Color.fromARGB (255, 247, 230, 100) : const Color.fromARGB(255, 255, 189, 65),
+              Condition.critical => Colors.deepOrange[700],
+              _ => Colors.grey[200], //default if not matching a specific condition
+            },
               borderRadius: BorderRadius.circular(50),
             ),
             child: Center(
               child: Text(
                 dataInfo.displayValue,
-                style: Theme.of(context).textTheme.titleLarge,
+                style:
+                //?.copyWith to override automatic color in theme pack
+                Theme.of(context).textTheme.titleLarge?.copyWith(color: Colors.black),
               ),
             ),
           ),

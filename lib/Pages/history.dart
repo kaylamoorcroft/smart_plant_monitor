@@ -222,7 +222,7 @@ class SensorValue extends StatelessWidget {
               Colors.grey[300], //default if not matching a specific condition
           },
         ),
-        child: Center(child: Text(val == null ? '---' : val!.value.toString())),
+        child: Center(child: Text(val == null ? '---' : val!.value.toString(), style: TextStyle(color: Colors.black))),
       ),
     );
   }
